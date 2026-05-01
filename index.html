@@ -23,7 +23,6 @@
             transition: background 0.5s;
         }
 
-        /* ФОНЫ */
         body.bg-cosmos { background: linear-gradient(145deg, #0a0a2a, #1a1a4a); }
         body.bg-city { background: linear-gradient(145deg, #1a2a3a, #2a3a4a); }
         body.bg-desert { background: linear-gradient(145deg, #c9a87b, #8b5a2b); }
@@ -39,7 +38,6 @@
             padding: 20px 16px;
         }
 
-        /* ГЛАВНОЕ МЕНЮ */
         .main-menu {
             text-align: center;
             margin-bottom: 30px;
@@ -74,7 +72,6 @@
             transform: scale(0.97);
         }
 
-        /* ИГРОВОЙ ИНТЕРФЕЙС */
         .game-interface.hidden {
             display: none;
         }
@@ -329,7 +326,6 @@
             margin-top: 10px;
         }
 
-        /* МОДАЛКИ */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -432,16 +428,14 @@
 </head>
 <body>
 <div class="game-container">
-    <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="menu-btn" id="playBtn">🎮 ИГЬ</div>
+        <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
         <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
         <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
     </div>
 
-    <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
     <div id="gameInterface" class="game-interface hidden">
         <div class="top-bar">
             <div class="resource-item"><span class="resource-icon">🧠</span><span class="resource-value" id="points">100</span></div>
@@ -497,7 +491,6 @@
     </div>
 </div>
 
-<!-- МОДАЛКИ... (такие же как в прошлой версии) -->
 <div class="modal-overlay" id="promoModal">
     <div class="modal-content">
         <div class="modal-title">🎫 ВВЕСТИ ПРОМОКОД</div>
@@ -530,6 +523,7 @@
             <div class="news-item">🛒 Магазин скинов</div>
             <div class="news-item">⏱️ Бонус по таймеру каждые 10 минут</div>
             <div class="news-item">🎨 Смена фона (Космос, Город, Пустыня, Океан)</div>
+            <div class="news-item">🔄 Автоматическая перезагрузка при обновлении</div>
         </div>
         <button class="modal-btn" id="closeNewsBtn">ЗАКРЫТЬ</button>
     </div>
@@ -570,7 +564,7 @@
 <script>
     (function() {
         // ========== АВТОМАТИЧЕСКАЯ ПЕРЕЗАГРУЗКА ==========
-        const GAME_VERSION = "2.0.0"; // МЕНЯЙ ЭТУ СТРОКУ ПРИ КАЖДОМ ОБНОВЛЕНИИ!
+        const GAME_VERSION = "3.0.0"; // 👈 НОВАЯ ВЕРСИЯ!
         
         const savedVersion = localStorage.getItem('gameVersion');
         if (savedVersion !== GAME_VERSION) {
@@ -579,7 +573,6 @@
         }
         // =================================================
         
-        // ===== СОСТОЯНИЕ =====
         let points = 100;
         let clickPower = 1;
         let prestige = 0;
@@ -593,13 +586,8 @@
         
         let prestigeBonus = 1;
         
-        let skins = {
-            neon: false,
-            gold: false,
-            rainbow: false
-        };
+        let skins = { neon: false, gold: false, rainbow: false };
         
-        // 50 нейросетей
         const upgrades = [];
         const names = [
             "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
@@ -963,4 +951,4 @@
     })();
 </script>
 </body>
-    </html>
+                </html>
