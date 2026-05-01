@@ -20,7 +20,14 @@
             justify-content: center;
             min-height: 100vh;
             padding: 10px;
+            transition: background 0.5s;
         }
+
+        /* ФОНЫ */
+        body.bg-cosmos { background: linear-gradient(145deg, #0a0a2a, #1a1a4a); }
+        body.bg-city { background: linear-gradient(145deg, #1a2a3a, #2a3a4a); }
+        body.bg-desert { background: linear-gradient(145deg, #c9a87b, #8b5a2b); }
+        body.bg-ocean { background: linear-gradient(145deg, #004466, #0088aa); }
 
         .game-container {
             width: 100%;
@@ -106,6 +113,34 @@
             color: #ffd966;
         }
 
+        /* НОВАЯ ПАНЕЛЬ АЛМАЗОВ */
+        .diamond-bar {
+            background: #0a1b2e;
+            border-radius: 40px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #ffaa00;
+        }
+
+        .diamond-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diamond-icon {
+            background: #00c3ff;
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
         .stats-panel {
             background: #0a1b2e;
             border-radius: 40px;
@@ -188,7 +223,6 @@
             margin-top: 8px;
         }
 
-        /* КНОПКА РИСК */
         .risk-btn {
             background: linear-gradient(145deg, #ff4444, #aa0000);
             border: 2px solid #ffaaaa;
@@ -358,23 +392,42 @@
             cursor: pointer;
         }
 
-        .news-list {
-            text-align: left;
-            margin: 15px 0;
-        }
-
-        .news-item {
-            color: #aac8f0;
+        .shop-item {
+            background: #1a3150;
+            border: 2px solid #ffaa00;
+            border-radius: 30px;
+            padding: 12px;
             margin: 10px 0;
-            padding-left: 20px;
-            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
         }
 
-        .news-item::before {
-            content: "🧠";
-            position: absolute;
-            left: -5px;
-            top: 0;
+        .shop-name {
+            color: #c1e4ff;
+            font-weight: 700;
+        }
+
+        .shop-price {
+            color: #ffd966;
+        }
+
+        .bg-select {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bg-option {
+            background: #1a3150;
+            padding: 8px 15px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -397,6 +450,18 @@
             <div class="resource-item"><span class="resource-icon">👑</span><span class="resource-value" id="prestigeLevel">0</span></div>
         </div>
 
+        <!-- НОВАЯ ПАНЕЛЬ АЛМАЗОВ -->
+        <div class="diamond-bar">
+            <div class="diamond-item">
+                <span class="diamond-icon">💎</span>
+                <span class="resource-value" id="diamonds">0</span>
+            </div>
+            <div class="diamond-item">
+                <span class="diamond-icon">⏱️</span>
+                <span class="resource-value" id="timerDisplay">10:00</span>
+            </div>
+        </div>
+
         <div class="stats-panel">
             <div class="stat-item">
                 <div class="stat-value" id="netCount">0</div>
@@ -417,7 +482,6 @@
         </div>
         <div class="click-hint" id="clickHint">+1</div>
 
-        <!-- НОВАЯ КНОПКА РИСК -->
         <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или x0.5)</div>
 
         <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (50 шт)</div>
@@ -426,7 +490,9 @@
         <div class="action-buttons">
             <div class="action-btn" id="backToMenuBtn">◀ МЕНЮ</div>
             <div class="action-btn" id="promoGameBtn">🎫 ПРОМО</div>
+            <div class="action-btn" id="shopBtn">🛒 МАГАЗИН</div>
             <div class="action-btn" id="prestigeGameBtn">🔄 ПРЕСТИЖ</div>
+            <div class="action-btn" id="bgBtn">🎨 ФОН</div>
         </div>
 
         <div class="save-badge" id="saveBadge">💾 автосохранение</div>
@@ -462,14 +528,48 @@
         <div class="modal-title">📢 ЧТО НОВОГО?</div>
         <div class="news-list">
             <div class="news-item">✨ Добавлена система престижа</div>
-            <div class="news-item">🎫 Вернулись промокоды (dima, dima god, start и другие)</div>
+            <div class="news-item">🎫 Вернулись промокоды</div>
             <div class="news-item">🏠 Добавлено главное меню</div>
-            <div class="news-item">📢 Кнопка новостей</div>
-            <div class="news-item">📊 Статистика покупок</div>
-            <div class="news-item">🎨 Красивые эффекты при клике</div>
-            <div class="news-item">🎲 Кнопка РИСК (удвоить или потерять половину)</div>
+            <div class="news-item">💎 Новая валюта — АЛМАЗЫ!</div>
+            <div class="news-item">🛒 Магазин скинов</div>
+            <div class="news-item">⏱️ Бонус по таймеру каждые 10 минут</div>
+            <div class="news-item">🎨 Смена фона (Космос, Город, Пустыня, Океан)</div>
         </div>
         <button class="modal-btn" id="closeNewsBtn">ЗАКРЫТЬ</button>
+    </div>
+</div>
+
+<!-- МОДАЛКА МАГАЗИНА -->
+<div class="modal-overlay" id="shopModal">
+    <div class="modal-content">
+        <div class="modal-title">🛒 МАГАЗИН СКИНОВ</div>
+        <div class="shop-item" data-skin="neon">
+            <span class="shop-name">🔥 Неоновый мозг</span>
+            <span class="shop-price">50💎</span>
+        </div>
+        <div class="shop-item" data-skin="gold">
+            <span class="shop-name">💎 Золотой мозг</span>
+            <span class="shop-price">100💎</span>
+        </div>
+        <div class="shop-item" data-skin="rainbow">
+            <span class="shop-name">🌈 Радужный мозг</span>
+            <span class="shop-price">200💎</span>
+        </div>
+        <button class="modal-btn" id="closeShopBtn">ЗАКРЫТЬ</button>
+    </div>
+</div>
+
+<!-- МОДАЛКА ВЫБОРА ФОНА -->
+<div class="modal-overlay" id="bgModal">
+    <div class="modal-content">
+        <div class="modal-title">🎨 ВЫБЕРИ ФОН</div>
+        <div class="bg-select">
+            <div class="bg-option" data-bg="cosmos">🌌 Космос</div>
+            <div class="bg-option" data-bg="city">🌃 Город</div>
+            <div class="bg-option" data-bg="desert">🏜️ Пустыня</div>
+            <div class="bg-option" data-bg="ocean">🌊 Океан</div>
+        </div>
+        <button class="modal-btn" id="closeBgBtn">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -481,8 +581,20 @@
         let prestige = 0;
         let totalSpent = 0;
         let purchasedCount = 0;
+        let diamonds = 0;
+        let currentSkin = "🧠";
+        let currentBg = "cosmos";
+        let bonusTimer = 600; // 10 минут в секундах
+        let bonusInterval = null;
         
         let prestigeBonus = 1;
+        
+        // Купленные скины
+        let skins = {
+            neon: false,
+            gold: false,
+            rainbow: false
+        };
         
         // 50 нейросетей
         const upgrades = [];
@@ -513,19 +625,39 @@
         
         // Промокоды
         const promoCodes = {
-            'dima': { points: 500, power: 10 },
-            'dima god': { points: 5000, power: 100 },
-            'start': { points: 100, power: 5 },
-            'neural': { points: 1000, power: 50 },
-            'evolution': { points: 2000, power: 100 },
-            'prestige': { points: 10000, power: 200 },
-            'legend': { points: 20000, power: 500 }
+            'dima': { points: 500, diamonds: 10 },
+            'dima god': { points: 5000, diamonds: 100 },
+            'start': { points: 100, diamonds: 5 },
+            'neural': { points: 1000, diamonds: 50 },
+            'evolution': { points: 2000, diamonds: 100 },
+            'prestige': { points: 10000, diamonds: 200 },
+            'legend': { points: 20000, diamonds: 500 }
         };
+        
+        // ===== ТАЙМЕР БОНУСА =====
+        function startBonusTimer() {
+            if (bonusInterval) clearInterval(bonusInterval);
+            bonusInterval = setInterval(() => {
+                if (bonusTimer > 0) {
+                    bonusTimer--;
+                    const mins = Math.floor(bonusTimer / 60);
+                    const secs = bonusTimer % 60;
+                    document.getElementById('timerDisplay').innerText = `${mins}:${secs.toString().padStart(2, '0')}`;
+                    if (bonusTimer === 0) {
+                        diamonds += 50;
+                        updateUI();
+                        saveGame();
+                        alert("⏱️ БОНУС! +50 алмазов!");
+                        bonusTimer = 600;
+                    }
+                }
+            }, 1000);
+        }
         
         // ===== СОХРАНЕНИЕ =====
         function saveGame() {
             const saveData = {
-                points, clickPower, prestige, totalSpent, purchasedCount,
+                points, clickPower, prestige, totalSpent, purchasedCount, diamonds, currentSkin, currentBg, skins,
                 upgrades: upgrades.map(u => u.purchased)
             };
             localStorage.setItem('neuralEvoSave', JSON.stringify(saveData));
@@ -545,6 +677,10 @@
                     prestige = data.prestige || 0;
                     totalSpent = data.totalSpent || 0;
                     purchasedCount = data.purchasedCount || 0;
+                    diamonds = data.diamonds || 0;
+                    currentSkin = data.currentSkin || "🧠";
+                    currentBg = data.currentBg || "cosmos";
+                    skins = data.skins || { neon: false, gold: false, rainbow: false };
                     if (data.upgrades) {
                         data.upgrades.forEach((purchased, i) => {
                             if (upgrades[i]) upgrades[i].purchased = purchased;
@@ -552,14 +688,19 @@
                     }
                 } catch(e) {}
             }
-            updatePrestigeBonus();
+            document.getElementById('brain').innerText = currentSkin;
+            applyBackground();
             updateUI();
             renderUpgrades();
         }
         
+        function applyBackground() {
+            document.body.classList.remove('bg-cosmos', 'bg-city', 'bg-desert', 'bg-ocean');
+            document.body.classList.add(`bg-${currentBg}`);
+        }
+        
         function updatePrestigeBonus() {
             prestigeBonus = 1 + (prestige * 0.1);
-            updateUI();
         }
         
         function getClickPowerWithBonus() {
@@ -579,6 +720,7 @@
             document.getElementById('netCount').innerText = purchasedCount;
             document.getElementById('totalSpent').innerText = totalSpent;
             document.getElementById('prestigeBonus').innerText = Math.floor((prestigeBonus - 1) * 100) + '%';
+            document.getElementById('diamonds').innerText = diamonds;
         }
         
         function renderUpgrades() {
@@ -640,6 +782,13 @@
             
             const gain = getClickPowerWithBonus();
             points += gain;
+            
+            // Шанс получить алмаз (1%)
+            if (Math.random() < 0.01) {
+                diamonds++;
+                alert("💎 ВЫПАЛ АЛМАЗ! +1💎");
+            }
+            
             showClickEffect(clientX, clientY, gain);
             
             const brain = document.getElementById('brain');
@@ -659,7 +808,7 @@
             }
             
             const chance = Math.random();
-            const isWin = chance < 0.5; // 50% на победу
+            const isWin = chance < 0.5;
             
             if (isWin) {
                 const gain = points;
@@ -674,7 +823,6 @@
             updateUI();
             saveGame();
             
-            // Визуальный эффект
             const btn = document.getElementById('riskBtn');
             btn.style.transform = 'scale(0.95)';
             setTimeout(() => btn.style.transform = '', 200);
@@ -709,9 +857,10 @@
             if (promoCodes[code]) {
                 const promo = promoCodes[code];
                 points += promo.points;
+                diamonds += promo.diamonds;
                 updateUI();
                 saveGame();
-                document.getElementById('promoMessage').innerText = `✅ +${promo.points} очков!`;
+                document.getElementById('promoMessage').innerText = `✅ +${promo.points} очков, +${promo.diamonds}💎!`;
             } else {
                 document.getElementById('promoMessage').innerText = '❌ Неверный промокод!';
             }
@@ -721,15 +870,40 @@
             }, 3000);
         }
         
+        // ===== МАГАЗИН =====
+        function buySkin(skinName, price, skinEmoji) {
+            if (diamonds >= price) {
+                diamonds -= price;
+                skins[skinName] = true;
+                currentSkin = skinEmoji;
+                document.getElementById('brain').innerText = currentSkin;
+                updateUI();
+                saveGame();
+                alert(`✅ Куплен скин ${skinEmoji}!`);
+            } else {
+                alert(`❌ Нужно ${price}💎!`);
+            }
+        }
+        
+        // ===== СМЕНА ФОНА =====
+        function setBackground(bg) {
+            currentBg = bg;
+            applyBackground();
+            saveGame();
+            alert(`🌌 Фон изменён!`);
+        }
+        
         // ===== МЕНЮ =====
         function showGame() {
             document.getElementById('mainMenu').classList.add('hidden');
             document.getElementById('gameInterface').classList.remove('hidden');
+            startBonusTimer();
         }
         
         function showMainMenu() {
             document.getElementById('mainMenu').classList.remove('hidden');
             document.getElementById('gameInterface').classList.add('hidden');
+            if (bonusInterval) clearInterval(bonusInterval);
         }
         
         function showPromoModal() {
@@ -745,6 +919,14 @@
             document.getElementById('newsModal').classList.add('show');
         }
         
+        function showShopModal() {
+            document.getElementById('shopModal').classList.add('show');
+        }
+        
+        function showBgModal() {
+            document.getElementById('bgModal').classList.add('show');
+        }
+        
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('show');
         }
@@ -752,6 +934,7 @@
         // ===== ИНИЦИАЛИЗАЦИЯ =====
         function init() {
             loadGame();
+            startBonusTimer();
             
             // Главное меню
             document.getElementById('playBtn').addEventListener('click', showGame);
@@ -763,6 +946,8 @@
             document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
             document.getElementById('promoGameBtn').addEventListener('click', showPromoModal);
             document.getElementById('prestigeGameBtn').addEventListener('click', showPrestigeModal);
+            document.getElementById('shopBtn').addEventListener('click', showShopModal);
+            document.getElementById('bgBtn').addEventListener('click', showBgModal);
             document.getElementById('riskBtn').addEventListener('click', riskGame);
             
             // Мозг
@@ -782,10 +967,22 @@
             document.getElementById('closePromoBtn').addEventListener('click', () => closeModal('promoModal'));
             document.getElementById('closePrestigeBtn').addEventListener('click', () => closeModal('prestigeModal'));
             document.getElementById('closeNewsBtn').addEventListener('click', () => closeModal('newsModal'));
+            document.getElementById('closeShopBtn').addEventListener('click', () => closeModal('shopModal'));
+            document.getElementById('closeBgBtn').addEventListener('click', () => closeModal('bgModal'));
             document.getElementById('doPrestigeBtn').addEventListener('click', doPrestige);
             
+            // Магазин скинов
+            document.querySelector('[data-skin="neon"]').addEventListener('click', () => buySkin('neon', 50, "🔥🧠"));
+            document.querySelector('[data-skin="gold"]').addEventListener('click', () => buySkin('gold', 100, "💎🧠"));
+            document.querySelector('[data-skin="rainbow"]').addEventListener('click', () => buySkin('rainbow', 200, "🌈🧠"));
+            
+            // Выбор фона
+            document.querySelectorAll('.bg-option').forEach(btn => {
+                btn.addEventListener('click', () => setBackground(btn.dataset.bg));
+            });
+            
             // Закрытие по клику на фон
-            const modals = ['promoModal', 'prestigeModal', 'newsModal'];
+            const modals = ['promoModal', 'prestigeModal', 'newsModal', 'shopModal', 'bgModal'];
             modals.forEach(id => {
                 document.getElementById(id).addEventListener('click', (e) => {
                     if (e.target === document.getElementById(id)) closeModal(id);
@@ -800,4 +997,4 @@
     })();
 </script>
 </body>
-                </html>
+    </html>
