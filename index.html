@@ -450,7 +450,7 @@
             </div>
             <div class="diamond-item">
                 <span class="diamond-icon">⏱️</span>
-                <span class="resource-value" id="timerDisplay">10:00</span>
+                <span class="resource-value" id="timerDisplay">2:00</span>
             </div>
         </div>
 
@@ -564,7 +564,7 @@
 <script>
     (function() {
         // ========== АВТОМАТИЧЕСКАЯ ПЕРЕЗАГРУЗКА ==========
-        const GAME_VERSION = "3.0.1"; // 👈 НОВАЯ ВЕРСИЯ!
+        const GAME_VERSION = "4.0.0"; // 👈 НОВАЯ ВЕРСИЯ!
         
         const savedVersion = localStorage.getItem('gameVersion');
         if (savedVersion !== GAME_VERSION) {
@@ -772,7 +772,7 @@
             
             if (Math.random() < 0.01) {
                 diamonds++;
-                alert("💎 ВЫПАЛ АЛМАЗ! +1💎");
+                alert("💎 ВЫПАЛ АЛМАЗ! +10💎");
             }
             
             showClickEffect(clientX, clientY, gain);
