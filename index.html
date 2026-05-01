@@ -1,3 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🧠 Эволюция Нейросетей</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b1729, #1b2f47);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 10px;
+            transition: background 0.5s;
+        }
+
+        body.bg-cosmos { background: linear-gradient(145deg, #0a0a2a, #1a1a4a); }
+        body.bg-city { background: linear-gradient(145deg, #1a2a3a, #2a3a4a); }
+        body.bg-desert { background: linear-gradient(145deg, #c9a87b, #8b5a2b); }
+        body.bg-ocean { background: linear-gradient(145deg, #004466, #0088aa); }
+
+        .game-container {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(18, 28, 40, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            padding: 20px 16px;
+        }
+
+        .main-menu {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .main-menu.hidden {
+            display: none;
+        }
+
+        .game-title {
+            color: #ffd966;
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            text-shadow: 0 0 20px #ffaa00;
+        }
+
+        .menu-btn {
+            background: linear-gradient(145deg, #2a4b6e, #1a3150);
+            border: 2px solid #7aa5d9;
+            color: white;
+            padding: 15px;
+            border-radius: 60px;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 10px 0;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.97);
+        }
+
+        .game-interface.hidden {
+            display: none;
+        }
+
+        .top-bar {
+            background: rgba(0, 10, 20, 0.7);
+            border-radius: 60px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .resource-icon {
+            background: #00c3ff;
+            width: 36px;
+            height: 36px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
         .resource-value {
             font-size: 20px;
             font-weight: 800;
@@ -8,12 +114,15 @@
             background: #0a1b2e;
             border-radius: 40px;
             padding: 10px 15px;
-            margin-bottom: 
+            margin-bottom: 15px;
             display: flex;
-            justify-contentetween
-        .
-            display
-            align-items
+            justify-content: space-between;
+            border: 1px solid #ffaa00;
+        }
+
+        .diamond-item {
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
@@ -320,7 +429,11 @@
 <body>
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
-        <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>        <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div        <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div        <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div        <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div        <div class="menu-btn" id="telegramBtn"></div<div class="menu-btn" id="rewardBtn"</div>
+        <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
+        <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
+        <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
+        <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
+        <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
     </div>
 
     <div id="gameInterface" class="game-interface hidden">
@@ -838,4 +951,4 @@
     })();
 </script>
 </body>
-                </html>
+                                                                       </html>
