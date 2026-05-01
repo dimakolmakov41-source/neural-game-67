@@ -67,17 +67,6 @@
             transform: scale(0.97);
         }
 
-        .menu-btn.test {
-            background: linear-gradient(145deg, #8a2be2, #4b0082);
-            border-color: #d4a5ff;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
         /* ИГРОВОЙ ИНТЕРФЕЙС */
         .game-interface.hidden {
             display: none;
@@ -197,6 +186,30 @@
             font-size: 16px;
             font-weight: 700;
             margin-top: 8px;
+        }
+
+        /* КНОПКА РИСК */
+        .risk-btn {
+            background: linear-gradient(145deg, #ff4444, #aa0000);
+            border: 2px solid #ffaaaa;
+            color: white;
+            padding: 12px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 800;
+            text-align: center;
+            cursor: pointer;
+            margin: 10px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .risk-btn:active {
+            transform: scale(0.97);
         }
 
         .upgrades-title {
@@ -374,7 +387,6 @@
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
         <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
         <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
-        <div class="menu-btn test" id="testBtn">🧪 ТЕСТ (нажми на меня)</div>
     </div>
 
     <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
@@ -404,6 +416,9 @@
             <div class="brain" id="brain">🧠</div>
         </div>
         <div class="click-hint" id="clickHint">+1</div>
+
+        <!-- НОВАЯ КНОПКА РИСК -->
+        <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или x0.5)</div>
 
         <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (50 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
@@ -452,6 +467,7 @@
             <div class="news-item">📢 Кнопка новостей</div>
             <div class="news-item">📊 Статистика покупок</div>
             <div class="news-item">🎨 Красивые эффекты при клике</div>
+            <div class="news-item">🎲 Кнопка РИСК (удвоить или потерять половину)</div>
         </div>
         <button class="modal-btn" id="closeNewsBtn">ЗАКРЫТЬ</button>
     </div>
@@ -466,7 +482,6 @@
         let totalSpent = 0;
         let purchasedCount = 0;
         
-        // Бонус престижа (+10% за каждый)
         let prestigeBonus = 1;
         
         // 50 нейросетей
@@ -636,6 +651,36 @@
             if (navigator.vibrate) navigator.vibrate(20);
         }
         
+        // ===== КНОПКА РИСК =====
+        function riskGame() {
+            if (points < 10) {
+                alert("❌ Нужно минимум 10 очков для риска!");
+                return;
+            }
+            
+            const chance = Math.random();
+            const isWin = chance < 0.5; // 50% на победу
+            
+            if (isWin) {
+                const gain = points;
+                points += gain;
+                alert(`🎉 ПОБЕДА! Вы удвоили очки!\n+${gain} очков!`);
+            } else {
+                const loss = Math.floor(points / 2);
+                points -= loss;
+                alert(`💀 ПОРАЖЕНИЕ! Вы потеряли половину очков!\n-${loss} очков!`);
+            }
+            
+            updateUI();
+            saveGame();
+            
+            // Визуальный эффект
+            const btn = document.getElementById('riskBtn');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => btn.style.transform = '', 200);
+            if (navigator.vibrate) navigator.vibrate(100);
+        }
+        
         // ===== ПРЕСТИЖ =====
         function doPrestige() {
             if (points < 10000) {
@@ -676,11 +721,6 @@
             }, 3000);
         }
         
-        // ===== ТЕСТОВАЯ КНОПКА =====
-        function testButton() {
-            alert('✅ ТЕСТОВАЯ КНОПКА РАБОТАЕТ!\n\nЕсли ты видишь это сообщение — игра загрузилась правильно, и меню работает.\n\nМожешь смело заливать на хостинг!');
-        }
-        
         // ===== МЕНЮ =====
         function showGame() {
             document.getElementById('mainMenu').classList.add('hidden');
@@ -718,12 +758,12 @@
             document.getElementById('promoMenuBtn').addEventListener('click', showPromoModal);
             document.getElementById('newsMenuBtn').addEventListener('click', showNewsModal);
             document.getElementById('prestigeMenuBtn').addEventListener('click', showPrestigeModal);
-            document.getElementById('testBtn').addEventListener('click', testButton);
             
             // Игровые кнопки
             document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
             document.getElementById('promoGameBtn').addEventListener('click', showPromoModal);
             document.getElementById('prestigeGameBtn').addEventListener('click', showPrestigeModal);
+            document.getElementById('riskBtn').addEventListener('click', riskGame);
             
             // Мозг
             document.getElementById('brain').addEventListener('mousedown', handleBrainClick);
@@ -760,4 +800,4 @@
     })();
 </script>
 </body>
-</html>
+                </html>
