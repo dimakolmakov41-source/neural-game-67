@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей 3.5.1 | 500 сетей + Чат + Фото</title>
+    <title>🧠 Эволюция Нейросетей 3.6.0 | 500 сетей + Автокликер</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
             justify-content: center;
             min-height: 100vh;
             padding: 10px;
-            transition: background 0.3s, background-color 0.3s;
+            transition: background 0.3s;
         }
 
         body.night-mode {
@@ -29,21 +29,7 @@
 
         body.night-mode .game-container {
             background: rgba(0, 0, 0, 0.85);
-            border-color: #444;
         }
-
-        body.night-mode .upgrade-card,
-        body.night-mode .stats-panel,
-        body.night-mode .diamond-bar,
-        body.night-mode .top-bar,
-        body.night-mode .chat-container {
-            background: rgba(0, 0, 0, 0.7);
-        }
-
-        body.bg-cosmos { background: linear-gradient(145deg, #0a0a2a, #1a1a4a); }
-        body.bg-city { background: linear-gradient(145deg, #1a2a3a, #2a3a4a); }
-        body.bg-desert { background: linear-gradient(145deg, #c9a87b, #8b5a2b); }
-        body.bg-ocean { background: linear-gradient(145deg, #004466, #0088aa); }
 
         .game-container {
             width: 100%;
@@ -53,15 +39,13 @@
             border-radius: 48px;
             border: 1px solid rgba(100, 180, 255, 0.3);
             padding: 20px 16px;
-            transition: all 0.3s;
         }
 
         .main-menu {
             text-align: center;
-            margin-bottom: 30px;
         }
 
-        .main-menu.hidden {
+        .main-menu.hidden, .game-interface.hidden {
             display: none;
         }
 
@@ -76,8 +60,7 @@
         .game-version {
             color: #88aaff;
             font-size: 12px;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
+            margin-bottom: 25px;
         }
 
         .menu-btn {
@@ -90,76 +73,33 @@
             font-weight: 700;
             margin: 8px 0;
             cursor: pointer;
-            text-align: center;
         }
 
-        .menu-btn:active {
-            transform: scale(0.97);
-        }
-
-        .game-interface.hidden {
-            display: none;
-        }
-
-        .top-bar {
+        .top-bar, .diamond-bar, .stats-panel {
             background: rgba(0, 10, 20, 0.7);
             border-radius: 60px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 8px;
         }
 
-        .resource-item {
+        .resource-item, .diamond-item {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .resource-icon {
-            background: #00c3ff;
-            width: 36px;
-            height: 36px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
         .resource-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 800;
             color: #ffd966;
         }
 
-        .diamond-bar {
-            background: #0a1b2e;
-            border-radius: 40px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            border: 1px solid #ffaa00;
-        }
-
-        .diamond-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         .stats-panel {
             background: #0a1b2e;
-            border-radius: 40px;
-            padding: 10px 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .stat-item {
@@ -168,52 +108,53 @@
 
         .stat-value {
             color: #ffd966;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 800;
         }
 
         .stat-label {
             color: #aac8f0;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .combo-bar {
             background: linear-gradient(145deg, #ff8800, #aa4400);
             border-radius: 40px;
-            padding: 8px 15px;
-            margin-bottom: 15px;
+            padding: 6px 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ffcc66;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
         }
 
         .brain-container {
             display: flex;
             justify-content: center;
-            margin: 20px 0 20px;
+            margin: 15px 0;
             position: relative;
         }
 
         .brain {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
             background: radial-gradient(circle at 30% 30%, #ffaa00, #ff5500);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            font-size: 70px;
             cursor: pointer;
             transition: 0.08s;
-            box-shadow: 0 15px 0 #aa4400, 0 0 30px #ffaa00;
+            box-shadow: 0 12px 0 #aa4400, 0 0 30px #ffaa00;
             border: 3px solid #ffffaa;
-            animation: float 3s ease-in-out infinite;
+            animation: float 3s infinite;
         }
 
         .brain.combo-active {
-            box-shadow: 0 15px 0 #aa4400, 0 0 50px #ff00ff;
-            animation: pulse-combo 0.5s ease-in-out infinite;
+            box-shadow: 0 12px 0 #aa4400, 0 0 50px #ff00ff;
+            animation: pulse-combo 0.5s infinite;
         }
 
         @keyframes pulse-combo {
@@ -223,83 +164,82 @@
 
         @keyframes float {
             0%,100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
 
         .brain:active {
-            transform: translateY(8px);
-            box-shadow: 0 7px 0 #aa4400;
+            transform: translateY(6px);
+            box-shadow: 0 6px 0 #aa4400;
         }
 
         .click-effect {
             position: absolute;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
             color: #ffaa00;
             text-shadow: 0 0 10px #ffaa00;
             pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
+            animation: floatUp 1s forwards;
             z-index: 100;
         }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0px); }
-            100% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 0; transform: translateY(-40px); }
         }
 
         .click-hint {
             text-align: center;
             color: #ffaa00;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            margin-top: 8px;
+            margin-top: 5px;
         }
 
-        .risk-btn {
+        .risk-btn, .autoclicker-btn {
             background: linear-gradient(145deg, #ff4444, #aa0000);
             border: 2px solid #ffaaaa;
             color: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 60px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 800;
             text-align: center;
             cursor: pointer;
-            margin: 10px 0;
+            margin: 8px 0;
+        }
+
+        .autoclicker-btn {
+            background: linear-gradient(145deg, #44aa44, #006600);
         }
 
         .upgrades-title {
             color: white;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
-            margin: 15px 0 10px;
+            margin: 10px 0;
             text-align: center;
             background: linear-gradient(145deg, #ffaa00, #ff5500);
-            padding: 8px;
+            padding: 6px;
             border-radius: 60px;
         }
 
         .upgrades-container {
             max-height: 200px;
             overflow-y: auto;
-            padding: 5px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .upgrade-card {
             background: linear-gradient(145deg, #1a3150, #0a1a30);
             border: 2px solid #4a8ac9;
             border-radius: 60px;
-            padding: 6px 12px;
-            margin-bottom: 6px;
+            padding: 5px 10px;
+            margin-bottom: 5px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
             cursor: pointer;
-        }
-
-        .upgrade-card:active {
-            transform: scale(0.98);
+            font-size: 11px;
         }
 
         .upgrade-card.purchased {
@@ -309,9 +249,8 @@
         }
 
         .upgrade-name {
-            font-size: 11px;
-            font-weight: 700;
             color: #c1e4ff;
+            font-weight: 700;
         }
 
         .upgrade-price {
@@ -319,13 +258,12 @@
             padding: 2px 8px;
             border-radius: 40px;
             color: #ffd966;
-            font-size: 10px;
         }
 
         .action-buttons {
             display: flex;
-            gap: 6px;
-            margin: 15px 0;
+            gap: 5px;
+            margin: 10px 0;
             flex-wrap: wrap;
         }
 
@@ -334,7 +272,7 @@
             background: #1a3150;
             border: 1px solid #4a8ac9;
             border-radius: 40px;
-            padding: 6px 3px;
+            padding: 5px;
             text-align: center;
             font-size: 10px;
             font-weight: 600;
@@ -345,40 +283,39 @@
         .chat-container {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 20px;
-            padding: 10px;
-            margin: 10px 0;
-            max-height: 150px;
+            padding: 8px;
+            margin: 8px 0;
+            max-height: 120px;
             overflow-y: auto;
         }
 
         .chat-message {
-            font-size: 11px;
-            padding: 4px;
+            font-size: 10px;
+            padding: 3px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             color: #ccc;
         }
 
         .chat-message .user { color: #ffaa00; font-weight: bold; }
-        .chat-message .time { color: #888; font-size: 9px; }
         .chat-input-area {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 5px;
+            margin-top: 5px;
         }
         .chat-input {
             flex: 1;
             background: #0a1b2e;
             border: 1px solid #4a8ac9;
             border-radius: 40px;
-            padding: 8px 12px;
+            padding: 5px 10px;
             color: white;
-            font-size: 12px;
+            font-size: 11px;
         }
         .chat-send {
             background: #4a8ac9;
             border: none;
             border-radius: 40px;
-            padding: 8px 15px;
+            padding: 5px 12px;
             color: white;
             font-weight: bold;
             cursor: pointer;
@@ -388,7 +325,7 @@
             text-align: center;
             color: #a0ffc0;
             font-size: 9px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .modal-overlay {
@@ -416,7 +353,7 @@
         .modal-content {
             background: linear-gradient(145deg, #1d3147, #112233);
             border-radius: 40px;
-            padding: 25px;
+            padding: 20px;
             width: 90%;
             max-width: 350px;
             border: 2px solid #b380ff;
@@ -425,26 +362,15 @@
 
         .modal-title {
             color: #d9b0ff;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             margin-bottom: 15px;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 10px;
-            margin: 15px 0;
-            background: #0b1727;
-            border: 2px solid #5f4d8a;
-            border-radius: 40px;
-            color: white;
-            text-align: center;
         }
 
         .modal-btn {
             background: #8c5cd4;
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 40px;
             border: none;
             font-weight: 700;
@@ -459,13 +385,12 @@
             transform: translateX(-50%);
             background: linear-gradient(145deg, #ffaa00, #ff5500);
             color: white;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 40px;
             font-weight: 700;
             z-index: 2000;
             animation: fadeOut 3s forwards;
-            pointer-events: none;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         @keyframes fadeOut {
@@ -473,13 +398,15 @@
             70% { opacity: 1; }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
+
+        input, button { outline: none; }
     </style>
 </head>
 <body>
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v3.5.1</div>
+        <div class="game-version" id="menuVersion">v3.6.0</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
@@ -498,18 +425,18 @@
         </div>
 
         <div class="diamond-bar">
-            <div class="diamond-item"><span class="diamond-icon">💎</span><span class="resource-value" id="diamonds">0</span></div>
-            <div class="diamond-item"><span class="diamond-icon">⏱️</span><span class="resource-value" id="timerDisplay">10:00</span></div>
+            <div class="diamond-item">💎 <span id="diamonds">0</span></div>
+            <div class="diamond-item">⏱️ <span id="timerDisplay">10:00</span></div>
         </div>
 
         <div class="stats-panel">
-            <div class="stat-item"><div class="stat-value" id="netCount">0</div><div class="stat-label">Куплено сетей</div></div>
+            <div class="stat-item"><div class="stat-value" id="netCount">0</div><div class="stat-label">Сетей</div></div>
             <div class="stat-item"><div class="stat-value" id="totalSpent">0</div><div class="stat-label">Потрачено</div></div>
             <div class="stat-item"><div class="stat-value" id="prestigeBonus">0%</div><div class="stat-label">Бонус</div></div>
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
 
-        <div class="combo-bar" id="comboBar">
+        <div class="combo-bar">
             <span>🔥 КОМБО: <span id="comboCount">0</span></span>
             <span>| x2: <span id="comboTimer">0.0с</span></span>
         </div>
@@ -520,11 +447,12 @@
         <div class="click-hint" id="clickHint">+1</div>
 
         <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или -10%)</div>
+        <div class="autoclicker-btn" id="autoclickerBtn">🤖 АВТОКЛИКЕР: ВЫКЛ</div>
 
-        <div class="chat-container" id="chatContainer">
+        <div class="chat-container">
             <div id="chatMessages"></div>
             <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Написать... /stats">
+                <input type="text" class="chat-input" id="chatInput" placeholder="/stats">
                 <button class="chat-send" id="chatSendBtn">➤</button>
             </div>
         </div>
@@ -534,9 +462,7 @@
 
         <div class="action-buttons">
             <div class="action-btn" id="backToMenuBtn">◀ МЕНЮ</div>
-            <div class="action-btn" id="promoGameBtn">🎫 ПРОМО</div>
             <div class="action-btn" id="shopBtn">🛒 СКИНЫ</div>
-            <div class="action-btn" id="prestigeGameBtn">🔄 ПРЕСТИЖ</div>
             <div class="action-btn" id="bgBtn">🎨 ФОН</div>
             <div class="action-btn" id="soundBtn">🔊 ЗВУК ВЫКЛ</div>
             <div class="action-btn" id="nightModeBtn">🌙 НОЧЬ</div>
@@ -547,73 +473,62 @@
 </div>
 
 <!-- Модалки -->
-<div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input" placeholder="ВВЕДИ КОД"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
+<div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="dailyPromoModal"><div class="modal-content"><div class="modal-title">🎲 ПРОМОКОД ДНЯ</div><div id="dailyPromoCode" style="color:#ffaa00;font-size:24px;"></div><div id="dailyPromoReward"></div><button id="closeDailyPromoBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="achievementsModal"><div class="modal-content" style="max-height:80vh;overflow-y:auto"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="prestigeModal"><div class="modal-content"><div class="modal-title">🔄 ПРЕСТИЖ</div><div id="prestigeInfo"></div><button id="doPrestigeBtn" class="modal-btn">СОВЕРШИТЬ</button><button id="closePrestigeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 500 нейросетей с названиями<br>💬 Фейковый чат с ботами<br>📸 Сохранение в фото<br>🔥 Комбо-клик x2<br>🏆 30 достижений</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon">🔥 Неоновый <span>50💎</span></div><div class="shop-item" data-skin="gold">💎 Золотой <span>100💎</span></div><div class="shop-item" data-skin="rainbow">🌈 Радужный <span>200💎</span></div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="bgModal"><div class="modal-content"><div class="modal-title">🎨 ФОН</div><div class="bg-select"><div class="bg-option" data-bg="cosmos">🌌 Космос</div><div class="bg-option" data-bg="city">🌃 Город</div><div class="bg-option" data-bg="desert">🏜️ Пустыня</div><div class="bg-option" data-bg="ocean">🌊 Океан</div></div><button id="closeBgBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="cheatModal"><div class="modal-content"><div class="modal-title">🔓 DEV</div><input id="cheatInput" class="modal-input" type="password" placeholder="****"><button id="activateCheatBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closeCheatBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="cheatMessage"></div></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 500 нейросетей<br>🤖 АВТОКЛИКЕР!<br>💬 Фейковый чат<br>📸 Фото прогресса<br>🔥 Комбо x2</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="bgModal"><div class="modal-content"><div class="modal-title">🎨 ФОН</div><div class="bg-select"><div class="bg-option" data-bg="cosmos" style="padding:8px;background:#1a3150;margin:5px;border-radius:40px;display:inline-block;cursor:pointer;">🌌 Космос</div><div class="bg-option" data-bg="city" style="padding:8px;background:#1a3150;margin:5px;border-radius:40px;display:inline-block;cursor:pointer;">🌃 Город</div><div class="bg-option" data-bg="desert" style="padding:8px;background:#1a3150;margin:5px;border-radius:40px;display:inline-block;cursor:pointer;">🏜️ Пустыня</div><div class="bg-option" data-bg="ocean" style="padding:8px;background:#1a3150;margin:5px;border-radius:40px;display:inline-block;cursor:pointer;">🌊 Океан</div></div><button id="closeBgBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="cheatModal"><div class="modal-content"><div class="modal-title">🔓 DEV</div><input id="cheatInput" class="modal-input" type="password"><button id="activateCheatBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closeCheatBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="cheatMessage"></div></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "3.5.1";
+    const GAME_VERSION = "3.6.0";
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         location.reload();
     }
-    
-    // Показываем версию в меню
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
-    // ОСНОВНЫЕ ПЕРЕМЕННЫЕ
+    // Переменные
     let points = 100, prestige = 0, totalSpent = 0, purchasedCount = 0, diamonds = 0;
     let currentSkin = "🧠", currentBg = "cosmos", bonusTimer = 600, bonusInterval = null;
     let prestigeBonus = 1, totalClicks = 0, skins = { neon: false, gold: false, rainbow: false };
     let comboCount = 0, comboActive = false, comboMultiplier = 1;
     let soundEnabled = false, nightMode = false;
+    let autoclickerActive = false, autoclickerInterval = null;
 
-    // ========== 500 НЕЙРОСЕТЕЙ ==========
-    const namesList = [
-        "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
-        "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
-        "🧠 Gemini", "👾 Нейро-интерфейс", "🤯 Claude 3", "🌌 Мультивселенная", "👁️ Midjourney",
-        "💎 Легендарная", "🌀 Сингулярность", "🔱 Божественный ИИ", "🌍 Нейро-Земля", "☀️ ИИ-Солнце",
-        "🪐 Галактическая", "🌌 Космическая", "⚡ Сверхразум", "🧬 ДНК-бота", "♾️ Бесконечность",
-        "👑 Всемогущий", "🌀 Абсолют", "🔥 Нейро-огонь", "❄️ Нейро-лёд", "🌪️ Нейро-буря",
-        "💀 Некросеть", "🦾 Кибер-мозг", "👁️ Всевидящий", "🎭 Нейро-мимик", "⚛️ Квантовый разум",
-        "📡 Сеть-шпион", "🛸 Пришелец", "🤖 Терминатор", "🧬 Эволюционист", "🌟 Звёздный",
-        "🌙 Лунный", "☀️ Солнечный", "🪐 Планетарный", "🌌 Галактический", "♾️ Бесконечный",
-        "👑 Королевский", "🔮 Магический", "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный",
-        "💀 Апокалипсис", "🧠 Нейро-титан", "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон",
-        "🌪️ Ураган", "🦾 Ассасин", "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция",
-        "🤖 Аватар", "🌀 Хаос", "💎 Алмазный", "👑 Император", "🌌 Звёздный странник",
-        "⚛️ Атомный", "🔮 Пророк", "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный",
-        "❄️ Морозный", "🌪️ Штормовой", "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд",
-        "⚡ Сверхновая", "🌍 Пандора", "🌀 Аномалия", "👾 Вторжение", "🔱 Посейдон",
-        "⚡ Зевс", "🔥 Прометей", "🌙 Артемида", "☀️ Ра", "🪐 Кронос",
-        "💎 Мадагаскар", "🧬 Клон", "🎭 Маска", "👑 Царь", "🌌 Андромеда"
-    ];
-    
+    // 500 НЕЙРОСЕТЕЙ (полный массив)
     let upgrades = [];
     for(let i = 0; i < 500; i++){
-        let name;
-        if(i < namesList.length){
-            name = namesList[i];
-        } else {
-            const prefixes = ["🔥", "💎", "⚡", "🌀", "🌟", "⭐", "✨", "💫", "🔷", "🔶"];
-            const suffixes = ["Ультра", "Мега", "Гига", "Тера", "Пета", "Экса", "Зетта", "Йотта", "Бесконечный", "Абсолютный"];
-            let p = prefixes[i % prefixes.length];
-            let s = suffixes[Math.floor(Math.random() * suffixes.length)];
-            name = `${p} Нейросеть ${s} #${i+1}`;
-        }
         let power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.25));
         let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.25, i));
+        let name = `🧠 Нейросеть #${i+1}`;
+        if(i < 80){
+            const coolNames = [
+                "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
+                "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
+                "🧠 Gemini", "👾 Нейро-интерфейс", "🤯 Claude 3", "🌌 Мультивселенная", "👁️ Midjourney",
+                "💎 Легендарная", "🌀 Сингулярность", "🔱 Божественный ИИ", "🌍 Нейро-Земля", "☀️ ИИ-Солнце",
+                "🪐 Галактическая", "🌌 Космическая", "⚡ Сверхразум", "🧬 ДНК-бота", "♾️ Бесконечность",
+                "👑 Всемогущий", "🌀 Абсолют", "🔥 Нейро-огонь", "❄️ Нейро-лёд", "🌪️ Нейро-буря",
+                "💀 Некросеть", "🦾 Кибер-мозг", "👁️ Всевидящий", "🎭 Нейро-мимик", "⚛️ Квантовый разум",
+                "📡 Сеть-шпион", "🛸 Пришелец", "🤖 Терминатор", "🧬 Эволюционист", "🌟 Звёздный",
+                "🌙 Лунный", "☀️ Солнечный", "🪐 Планетарный", "👑 Королевский", "🔮 Магический",
+                "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный", "💀 Апокалипсис", "🧠 Нейро-титан",
+                "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон", "🌪️ Ураган", "🦾 Ассасин",
+                "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция", "🤖 Аватар", "🌀 Хаос",
+                "💎 Алмазный", "👑 Император", "🌌 Звёздный странник", "⚛️ Атомный", "🔮 Пророк",
+                "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный", "❄️ Морозный", "🌪️ Штормовой",
+                "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд", "⚡ Сверхновая", "🌍 Пандора"
+            ];
+            if(i < coolNames.length) name = coolNames[i];
+        }
         upgrades.push({ id: i, name: name, power: power, price: price, purchased: false });
     }
 
-    // ДОСТИЖЕНИЯ
+    // Достижения
     let achievements = {
         clicks100:{name:"100 кликов",completed:false,progress:0,target:100,reward:5},
         clicks1000:{name:"1000 кликов",completed:false,progress:0,target:1000,reward:20},
@@ -623,45 +538,31 @@
         upgrades250:{name:"250 сетей",completed:false,progress:0,target:250,reward:250},
         upgrades500:{name:"ВСЕ 500 СЕТЕЙ!",completed:false,progress:0,target:500,reward:1000},
         prestige1:{name:"Престиж 1",completed:false,progress:0,target:1,reward:50},
-        riskWin5:{name:"5 побед в риске",completed:false,progress:0,target:5,reward:25},
+        riskWin5:{name:"5 побед",completed:false,progress:0,target:5,reward:25},
         diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10}
     };
 
     const promoCodes = { 'dima':{points:500,diamonds:10}, 'dima god':{points:5000,diamonds:100}, 'start':{points:100,diamonds:5}, '500nets':{points:50000,diamonds:500} };
 
-    // ========== ФЕЙКОВЫЙ ЧАТ ==========
+    // Чат
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-    const botPhrases = [
-        "🔴 Анон: Кто тут самый кликабельный?", "🟢 Неанон: Купил 100 нейросетей!",
-        "🤖 Бот: Престиж 10 — база", "💎 Бот: У кого алмазы есть?",
-        "🔥 Чат: Комбо x2 имба!", "😭 Игрок: Опять проиграл в риск...",
-        "🎉 Анон: Победа! +10000 очков!", "🧠 Бот: Нейросети рулят",
-        "💀 Игрок: Кто читерит?", "👑 Бот: Дима лучший создатель!"
-    ];
+    const botPhrases = ["🔴 Анон: Кто тут самый кликабельный?", "🤖 Бот: Престиж 10 — база", "💎 Бот: У кого алмазы есть?", "🔥 Чат: Комбо x2 имба!", "👑 Бот: Дима лучший!"];
 
     function renderChat(){
         let html = '';
-        chatMessages.slice(-30).forEach(m => {
-            html += `<div class="chat-message"><span class="time">${m.time}</span> <span class="user">${m.user}:</span> ${m.text}</div>`;
-        });
+        chatMessages.slice(-25).forEach(m => html += `<div class="chat-message"><span class="user">${m.user}:</span> ${m.text} <span style="color:#888">${m.time}</span></div>`);
         document.getElementById('chatMessages').innerHTML = html;
-        const container = document.getElementById('chatContainer');
-        if(container) container.scrollTop = container.scrollHeight;
     }
-
     function sendChatMessage(){
         let input = document.getElementById('chatInput');
         let text = input.value.trim();
         if(!text) return;
-        if(text.startsWith('/stats')){
-            text = `⭐ Очки: ${Math.floor(points)} | Престиж: ${prestige} | Сетей: ${purchasedCount}/500 | Алмазов: ${diamonds}`;
-        }
+        if(text.startsWith('/stats')) text = `⭐ Очки: ${Math.floor(points)} | Престиж: ${prestige} | Сетей: ${purchasedCount}/500 | Алмазов: ${diamonds}`;
         chatMessages.push({ user: "Вы", text: text, time: new Date().toLocaleTimeString() });
         localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
         renderChat();
         input.value = '';
     }
-
     function addBotMessage(){
         let randomPhrase = botPhrases[Math.floor(Math.random() * botPhrases.length)];
         chatMessages.push({ user: "🤖 Бот", text: randomPhrase, time: new Date().toLocaleTimeString() });
@@ -670,12 +571,12 @@
         renderChat();
     }
 
-    // ========== СОХРАНЕНИЕ В ФОТО ==========
-    async function saveToPhoto(){
-        showToast("📸 Создаём фото прогресса...");
+    // Фото
+    function saveToPhoto(){
+        showToast("📸 Создаём фото...");
         const canvas = document.createElement('canvas');
         canvas.width = 400;
-        canvas.height = 600;
+        canvas.height = 550;
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = nightMode ? '#1a1a2a' : '#0b1729';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -684,30 +585,30 @@
         ctx.fillText('🧠 ЭВОЛЮЦИЯ', 80, 60);
         ctx.font = '16px "Segoe UI"';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(`📅 ${new Date().toLocaleString()}`, 100, 100);
+        ctx.fillText(`📅 ${new Date().toLocaleString()}`, 100, 105);
         ctx.fillStyle = '#ffaa00';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 18px monospace';
         ctx.fillText(`ОЧКИ: ${Math.floor(points).toLocaleString()}`, 50, 160);
-        ctx.fillText(`ПРЕСТИЖ: ${prestige} (+${Math.floor((prestigeBonus-1)*100)}%)`, 50, 210);
-        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/500`, 50, 260);
-        ctx.fillText(`ПОТРАЧЕНО: ${totalSpent.toLocaleString()}`, 50, 310);
-        ctx.fillText(`АЛМАЗОВ: ${diamonds}💎`, 50, 360);
-        ctx.fillText(`ВСЕГО КЛИКОВ: ${totalClicks.toLocaleString()}`, 50, 410);
+        ctx.fillText(`ПРЕСТИЖ: ${prestige} (+${Math.floor((prestigeBonus-1)*100)}%)`, 50, 200);
+        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/500`, 50, 240);
+        ctx.fillText(`ПОТРАЧЕНО: ${totalSpent.toLocaleString()}`, 50, 280);
+        ctx.fillText(`АЛМАЗОВ: ${diamonds}💎`, 50, 320);
+        ctx.fillText(`КЛИКОВ: ${totalClicks.toLocaleString()}`, 50, 360);
         ctx.fillStyle = '#88aaff';
         ctx.font = '12px monospace';
-        ctx.fillText(`Версия ${GAME_VERSION} | Создано Дима и ИИ`, 70, 560);
+        ctx.fillText(`Версия ${GAME_VERSION}`, 150, 520);
         const link = document.createElement('a');
-        link.download = `neural_evolution_${Date.now()}.png`;
+        link.download = `neural_${Date.now()}.png`;
         link.href = canvas.toDataURL();
         link.click();
         showToast("✅ Фото сохранено!");
     }
 
-    // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+    // Основная логика
     function showToast(msg){
         let t = document.createElement('div'); t.className='toast'; t.innerText=msg;
         document.body.appendChild(t);
-        setTimeout(()=>t.remove(),3000);
+        setTimeout(()=>t.remove(),2500);
     }
 
     function updateAchievements(){
@@ -769,128 +670,150 @@
         return power;
     }
 
-    function updateUI(){
-        document.getElementById('points').innerText=Math.floor(points);
-        document.getElementById('power').innerText=getClickPower();
-        document.getElementById('prestigeLevel').innerText=prestige;
-        document.getElementById('clickHint').innerHTML=comboActive?`+${getClickPower()} (x2 КОМБО!)`:`+${getClickPower()}`;
-        document.getElementById('netCount').innerText=purchasedCount;
-        document.getElementById('totalSpent').innerText=totalSpent;
-        document.getElementById('prestigeBonus').innerText=Math.floor((prestigeBonus-1)*100)+'%';
-        document.getElementById('diamonds').innerText=diamonds;
-        document.getElementById('totalClicks').innerText=totalClicks;
-    }
-
-    function renderUpgrades(){
-        let html = '';
-        let displayCount = Math.min(upgrades.length, 100);
-        for(let i = 0; i < displayCount; i++){
-            let up = upgrades[i];
-            let disabledClass = (!up.purchased && points >= up.price) ? '' : 'purchased';
-            html += `<div class="upgrade-card ${disabledClass}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased ? '✅' : `💰 ${up.price}`}</span></div>`;
-        }
-        document.getElementById('upgradesContainer').innerHTML = html;
-    }
-
-    function buyUpgrade(id){
-        let up=upgrades.find(u=>u.id===id);
-        if(!up || up.purchased || points<up.price) return;
-        points-=up.price;
-        totalSpent+=up.price;
-        up.purchased=true;
-        purchasedCount++;
-        updateUI(); renderUpgrades(); saveGame(); updateAchievements();
+    function doClick(auto = false){
+        let gain = getClickPower();
+        points += gain;
+        totalClicks++;
+        if(Math.random() < 0.01){ diamonds++; showToast("💎 +1 алмаз!"); }
+        if(!auto) startCombo();
+        updateUI();
+        saveGame();
+        updateAchievements();
+        if(!auto && navigator.vibrate) navigator.vibrate(20);
     }
 
     function handleBrainClick(e){
         e.preventDefault();
-        let gain=getClickPower();
-        points+=gain;
-        totalClicks++;
-        if(Math.random()<0.01){ diamonds++; showToast("💎 +1 алмаз!"); }
-        startCombo();
-        let rect = document.getElementById('brain').getBoundingClientRect();
-        let x=e.clientX||e.touches?.[0]?.clientX||rect.left+80;
-        let y=e.clientY||e.touches?.[0]?.clientY||rect.top+80;
-        let ef=document.createElement('div'); ef.className='click-effect'; ef.innerText=`+${gain}`;
-        ef.style.left=x+'px'; ef.style.top=y+'px'; document.body.appendChild(ef);
-        setTimeout(()=>ef.remove(),1000);
-        let brain=document.getElementById('brain');
-        brain.style.transform='translateY(8px)';
-        setTimeout(()=>brain.style.transform='',100);
-        updateUI(); saveGame(); updateAchievements();
-        if(navigator.vibrate) navigator.vibrate(20);
+        doClick(false);
+        let brain = document.getElementById('brain');
+        brain.style.transform = 'translateY(6px)';
+        setTimeout(()=>brain.style.transform = '', 100);
+        let rect = brain.getBoundingClientRect();
+        let x = e.clientX || rect.left+75;
+        let y = e.clientY || rect.top+75;
+        let ef = document.createElement('div'); ef.className='click-effect'; ef.innerText=`+${getClickPower()}`;
+        ef.style.left = x+'px'; ef.style.top = y+'px';
+        document.body.appendChild(ef);
+        setTimeout(()=>ef.remove(),800);
     }
 
     function riskGame(){
         if(points<10){ showToast("❌ Нужно 10 очков"); return; }
-        let bet=Math.floor(points/2);
-        let isWin=Math.random()<0.5;
+        let bet = Math.floor(points/2);
+        let isWin = Math.random()<0.5;
         if(isWin){
-            points+=bet;
+            points += bet;
             showToast(`🎉 ПОБЕДА! +${bet} очков`);
-            let wins=parseInt(localStorage.getItem('riskWins')||'0')+1;
+            let wins = parseInt(localStorage.getItem('riskWins')||'0')+1;
             localStorage.setItem('riskWins',wins);
             updateAchievements();
         }else{
-            let loss=Math.floor(bet*0.1);
-            points-=loss;
+            let loss = Math.floor(bet*0.1);
+            points -= loss;
             showToast(`💀 ПОРАЖЕНИЕ! -${loss} очков`);
         }
         updateUI(); saveGame();
     }
 
+    function toggleAutoclicker(){
+        autoclickerActive = !autoclickerActive;
+        if(autoclickerActive){
+            autoclickerInterval = setInterval(() => { doClick(true); }, 5000);
+            document.getElementById('autoclickerBtn').innerHTML = "🤖 АВТОКЛИКЕР: ВКЛ (5с)";
+            showToast("🤖 Автокликер включён! Бьёт каждые 5 секунд");
+        } else {
+            if(autoclickerInterval) clearInterval(autoclickerInterval);
+            document.getElementById('autoclickerBtn').innerHTML = "🤖 АВТОКЛИКЕР: ВЫКЛ";
+            showToast("🤖 Автокликер выключен");
+        }
+        saveGame();
+    }
+
+    function updateUI(){
+        document.getElementById('points').innerText = Math.floor(points);
+        document.getElementById('power').innerText = getClickPower();
+        document.getElementById('prestigeLevel').innerText = prestige;
+        document.getElementById('clickHint').innerHTML = comboActive ? `+${getClickPower()} (x2 КОМБО!)` : `+${getClickPower()}`;
+        document.getElementById('netCount').innerText = purchasedCount;
+        document.getElementById('totalSpent').innerText = totalSpent;
+        document.getElementById('prestigeBonus').innerText = Math.floor((prestigeBonus-1)*100)+'%';
+        document.getElementById('diamonds').innerText = diamonds;
+        document.getElementById('totalClicks').innerText = totalClicks;
+    }
+
+    function renderUpgrades(){
+        let html = '';
+        for(let i = 0; i < upgrades.length; i++){
+            let up = upgrades[i];
+            let disabled = (!up.purchased && points >= up.price) ? '' : 'purchased';
+            html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased ? '✅' : `💰 ${up.price}`}</span></div>`;
+        }
+        document.getElementById('upgradesContainer').innerHTML = html;
+    }
+
+    function buyUpgrade(id){
+        let up = upgrades.find(u=>u.id===id);
+        if(!up || up.purchased || points<up.price) return;
+        points -= up.price;
+        totalSpent += up.price;
+        up.purchased = true;
+        purchasedCount++;
+        updateUI();
+        renderUpgrades();
+        saveGame();
+        updateAchievements();
+    }
+
     function doPrestige(){
         if(points<10000){ showToast(`❌ Нужно 10000 очков`); return; }
-        if(confirm("Совершить престиж? +10% бонус навсегда")){
+        if(confirm("Престиж? +10% бонус навсегда")){
             prestige++;
-            points=100;
-            totalSpent=0;
-            purchasedCount=0;
+            points = 100;
+            totalSpent = 0;
+            purchasedCount = 0;
             upgrades.forEach(u=>u.purchased=false);
-            prestigeBonus=1+prestige*0.1;
-            updateUI(); renderUpgrades(); saveGame();
-            showToast(`✨ Престиж ${prestige}! Бонус +${prestige*10}%`);
+            prestigeBonus = 1 + prestige*0.1;
+            updateUI();
+            renderUpgrades();
+            saveGame();
+            showToast(`✨ Престиж ${prestige}! +${prestige*10}%`);
             updateAchievements();
         }
     }
 
     function saveGame(){
-        let save={ points, prestige, totalSpent, purchasedCount, diamonds, currentSkin, currentBg, nightMode, totalClicks, soundEnabled, upgrades:upgrades.map(u=>u.purchased), achievements, chatMessages };
-        localStorage.setItem('neuralEvoSave',JSON.stringify(save));
-        document.getElementById('saveBadge').innerText='💾 сохранено!';
-        setTimeout(()=>document.getElementById('saveBadge').innerText='💾 автосохранение',1500);
+        let save = { points, prestige, totalSpent, purchasedCount, diamonds, currentSkin, currentBg, nightMode, totalClicks, soundEnabled, autoclickerActive, upgrades: upgrades.map(u=>u.purchased), achievements, chatMessages };
+        localStorage.setItem('neuralEvoSave', JSON.stringify(save));
+        document.getElementById('saveBadge').innerText = '💾 сохранено!';
+        setTimeout(()=>document.getElementById('saveBadge').innerText = '💾 автосохранение', 1500);
     }
 
     function loadGame(){
-        let saved=localStorage.getItem('neuralEvoSave');
+        let saved = localStorage.getItem('neuralEvoSave');
         if(saved){
-            let data=JSON.parse(saved);
-            points=data.points||100; prestige=data.prestige||0; totalSpent=data.totalSpent||0;
-            purchasedCount=data.purchasedCount||0; diamonds=data.diamonds||0; currentSkin=data.currentSkin||"🧠";
-            currentBg=data.currentBg||"cosmos"; nightMode=data.nightMode||false; totalClicks=data.totalClicks||0;
-            soundEnabled=data.soundEnabled||false; chatMessages=data.chatMessages||[];
-            if(data.upgrades) data.upgrades.forEach((p,i)=>{ if(upgrades[i]) upgrades[i].purchased=p; });
-            if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed=data.achievements[k].completed;
+            let data = JSON.parse(saved);
+            points = data.points||100; prestige = data.prestige||0; totalSpent = data.totalSpent||0;
+            purchasedCount = data.purchasedCount||0; diamonds = data.diamonds||0; currentSkin = data.currentSkin||"🧠";
+            currentBg = data.currentBg||"cosmos"; nightMode = data.nightMode||false; totalClicks = data.totalClicks||0;
+            soundEnabled = data.soundEnabled||false; autoclickerActive = data.autoclickerActive||false;
+            chatMessages = data.chatMessages||[];
+            if(data.upgrades) data.upgrades.forEach((p,i)=>{ if(upgrades[i]) upgrades[i].purchased = p; });
+            if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
         }
-        prestigeBonus=1+prestige*0.1;
-        document.getElementById('brain').innerText=currentSkin;
-        document.getElementById('soundBtn').innerHTML=soundEnabled?"🔊 ЗВУК ВКЛ":"🔇 ЗВУК ВЫКЛ";
-        if(nightMode) toggleNightMode();
+        prestigeBonus = 1 + prestige*0.1;
+        document.getElementById('brain').innerText = currentSkin;
+        document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
+        if(nightMode) document.body.classList.add('night-mode');
+        if(autoclickerActive) toggleAutoclicker();
         applyBackground();
-        updateUI(); renderUpgrades(); renderChat();
+        updateUI();
+        renderUpgrades();
+        renderChat();
     }
 
     function applyBackground(){
         document.body.classList.remove('bg-cosmos','bg-city','bg-desert','bg-ocean');
         document.body.classList.add(`bg-${currentBg}`);
-    }
-
-    function toggleNightMode(){
-        nightMode=!nightMode;
-        if(nightMode) document.body.classList.add('night-mode');
-        else document.body.classList.remove('night-mode');
-        document.getElementById('nightModeBtn').innerHTML=nightMode?"☀️ ДЕНЬ":"🌙 НОЧЬ";
     }
 
     function buySkin(name,price,emoji){
@@ -901,20 +824,20 @@
     function setBackground(bg){ currentBg=bg; applyBackground(); saveGame(); showToast(`Фон изменён`); }
 
     function activateCheat(){
-        if(document.getElementById('cheatInput').value==="8217"){
-            points+=100000; diamonds+=100; updateUI(); saveGame(); showToast("Чит активирован! +100000 очков, +100💎");
+        if(document.getElementById('cheatInput').value === "8217"){
+            points += 100000; diamonds += 100; updateUI(); saveGame(); showToast("Чит активирован!");
             document.getElementById('cheatModal').classList.remove('show');
-        }else{ document.getElementById('cheatMessage').innerHTML='❌ Неверный пароль!'; setTimeout(()=>document.getElementById('cheatMessage').innerHTML='',2000); }
+        } else { document.getElementById('cheatMessage').innerHTML='❌ Неверный пароль!'; setTimeout(()=>document.getElementById('cheatMessage').innerHTML='',2000); }
     }
 
     function startBonusTimer(){
         if(bonusInterval) clearInterval(bonusInterval);
-        bonusInterval=setInterval(()=>{
+        bonusInterval = setInterval(()=>{
             if(bonusTimer>0){
                 bonusTimer--;
-                let m=Math.floor(bonusTimer/60), s=bonusTimer%60;
-                document.getElementById('timerDisplay').innerText=`${m}:${s.toString().padStart(2,'0')}`;
-                if(bonusTimer===0){ diamonds+=50; updateUI(); saveGame(); showToast("⏱️ +50 алмазов!"); bonusTimer=600; }
+                let m = Math.floor(bonusTimer/60), s = bonusTimer%60;
+                document.getElementById('timerDisplay').innerText = `${m}:${s.toString().padStart(2,'0')}`;
+                if(bonusTimer === 0){ diamonds+=50; updateUI(); saveGame(); showToast("⏱️ +50 алмазов!"); bonusTimer=600; }
             }
         },1000);
     }
@@ -931,40 +854,39 @@
     }
     function closeModal(id){ document.getElementById(id).classList.remove('show'); }
     function showAchievements(){
-        let html='';
+        let html = '';
         for(let k in achievements){
-            let a=achievements[k];
-            html+=`<div class="achievement-item"><div><b>${a.name}</b><br>${a.progress}/${a.target}</div><div>${a.completed?'✅ +'+a.reward+'💎':'🔒'}</div></div>`;
+            let a = achievements[k];
+            html += `<div style="padding:5px;background:#1a3150;margin:5px;border-radius:20px;"><b>${a.name}</b> ${a.progress}/${a.target} ${a.completed ? '✅ +'+a.reward+'💎' : '🔒'}</div>`;
         }
-        document.getElementById('achievementsList').innerHTML=html;
+        document.getElementById('achievementsList').innerHTML = html;
         document.getElementById('achievementsModal').classList.add('show');
     }
 
     function init(){
         loadGame();
-        setInterval(()=>addBotMessage(), 15000);
+        setInterval(addBotMessage, 18000);
         document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
         document.getElementById('chatInput').addEventListener('keypress', e=>{ if(e.key==='Enter') sendChatMessage(); });
         document.getElementById('playBtn').addEventListener('click', showGame);
         document.getElementById('photoSaveBtn').addEventListener('click', saveToPhoto);
         document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
         document.getElementById('riskBtn').addEventListener('click', riskGame);
+        document.getElementById('autoclickerBtn').addEventListener('click', toggleAutoclicker);
         document.getElementById('brain').addEventListener('click', handleBrainClick);
         document.getElementById('brain').addEventListener('touchstart', handleBrainClick);
         document.getElementById('upgradesContainer').addEventListener('click', e=>{ let card=e.target.closest('.upgrade-card'); if(card && !card.classList.contains('purchased')) buyUpgrade(parseInt(card.dataset.id)); });
         document.getElementById('soundBtn').addEventListener('click',()=>{ soundEnabled=!soundEnabled; document.getElementById('soundBtn').innerHTML=soundEnabled?"🔊 ЗВУК ВКЛ":"🔇 ЗВУК ВЫКЛ"; saveGame(); });
-        document.getElementById('nightModeBtn').addEventListener('click',()=>{ toggleNightMode(); saveGame(); });
+        document.getElementById('nightModeBtn').addEventListener('click',()=>{ nightMode=!nightMode; if(nightMode) document.body.classList.add('night-mode'); else document.body.classList.remove('night-mode'); saveGame(); });
         document.getElementById('promoMenuBtn').addEventListener('click',()=>document.getElementById('promoModal').classList.add('show'));
-        document.getElementById('dailyPromoBtn').addEventListener('click',()=>{ let pcode = "dima5000"; document.getElementById('dailyPromoCode').innerHTML=pcode; document.getElementById('dailyPromoReward').innerHTML="Награда: 5000 очков, 50💎"; document.getElementById('dailyPromoModal').classList.add('show'); });
+        document.getElementById('dailyPromoBtn').addEventListener('click',()=>{ document.getElementById('dailyPromoCode').innerHTML="dima5000"; document.getElementById('dailyPromoReward').innerHTML="5000 очков, 50💎"; document.getElementById('dailyPromoModal').classList.add('show'); });
         document.getElementById('achievementsBtn').addEventListener('click', showAchievements);
         document.getElementById('newsMenuBtn').addEventListener('click',()=>document.getElementById('newsModal').classList.add('show'));
         document.getElementById('prestigeMenuBtn').addEventListener('click',()=>{ document.getElementById('prestigeInfo').innerHTML=`У вас ${Math.floor(points)} очков<br>Нужно 10000`; document.getElementById('prestigeModal').classList.add('show'); });
         document.getElementById('cheatMenuBtn').addEventListener('click',()=>document.getElementById('cheatModal').classList.add('show'));
-        document.getElementById('promoGameBtn').addEventListener('click',()=>document.getElementById('promoModal').classList.add('show'));
         document.getElementById('shopBtn').addEventListener('click',()=>document.getElementById('shopModal').classList.add('show'));
-        document.getElementById('prestigeGameBtn').addEventListener('click',()=>{ document.getElementById('prestigeInfo').innerHTML=`У вас ${Math.floor(points)} очков`; document.getElementById('prestigeModal').classList.add('show'); });
         document.getElementById('bgBtn').addEventListener('click',()=>document.getElementById('bgModal').classList.add('show'));
-        document.getElementById('activatePromoBtn').addEventListener('click',()=>{ let code=document.getElementById('promoInput').value.toLowerCase(); if(promoCodes[code]){ points+=promoCodes[code].points; diamonds+=promoCodes[code].diamonds; updateUI(); saveGame(); document.getElementById('promoMessage').innerHTML='✅ Активирован!'; }else document.getElementById('promoMessage').innerHTML='❌ Неверный код'; });
+        document.getElementById('activatePromoBtn').addEventListener('click',()=>{ let code=document.getElementById('promoInput').value.toLowerCase(); if(promoCodes[code]){ points+=promoCodes[code].points; diamonds+=promoCodes[code].diamonds; updateUI(); saveGame(); document.getElementById('promoMessage').innerHTML='✅ Активирован!'; } else document.getElementById('promoMessage').innerHTML='❌ Неверный код'; });
         document.getElementById('closePromoBtn').addEventListener('click',()=>closeModal('promoModal'));
         document.getElementById('closeDailyPromoBtn').addEventListener('click',()=>closeModal('dailyPromoModal'));
         document.getElementById('closeAchievementsBtn').addEventListener('click',()=>closeModal('achievementsModal'));
@@ -977,7 +899,7 @@
         document.getElementById('closeCheatBtn').addEventListener('click',()=>closeModal('cheatModal'));
         document.querySelectorAll('[data-skin]').forEach(el=>{ let s=el.dataset.skin; if(s==='neon') el.addEventListener('click',()=>buySkin('neon',50,"🔥🧠")); if(s==='gold') el.addEventListener('click',()=>buySkin('gold',100,"💎🧠")); if(s==='rainbow') el.addEventListener('click',()=>buySkin('rainbow',200,"🌈🧠")); });
         document.querySelectorAll('.bg-option').forEach(btn=>btn.addEventListener('click',()=>setBackground(btn.dataset.bg)));
-        setInterval(saveGame,10000);
+        setInterval(saveGame, 15000);
     }
     init();
 })();
