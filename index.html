@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей 3.5.0 | Чат + Фото</title>
+    <title>🧠 Эволюция Нейросетей 3.5.1 | 500 сетей + Чат + Фото</title>
     <style>
         * {
             margin: 0;
@@ -69,8 +69,15 @@
             color: #ffd966;
             font-size: 28px;
             font-weight: 800;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
             text-shadow: 0 0 20px #ffaa00;
+        }
+
+        .game-version {
+            color: #88aaff;
+            font-size: 12px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
         }
 
         .menu-btn {
@@ -335,7 +342,6 @@
             color: white;
         }
 
-        /* Чат */
         .chat-container {
             background: rgba(0, 0, 0, 0.5);
             border-radius: 20px;
@@ -473,6 +479,7 @@
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
+        <div class="game-version" id="menuVersion">v3.5.1</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
@@ -514,7 +521,6 @@
 
         <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или -10%)</div>
 
-        <!-- ФЕЙКОВЫЙ ЧАТ -->
         <div class="chat-container" id="chatContainer">
             <div id="chatMessages"></div>
             <div class="chat-input-area">
@@ -540,23 +546,26 @@
     </div>
 </div>
 
-<!-- Модалки (упрощённо) -->
+<!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input" placeholder="ВВЕДИ КОД"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="dailyPromoModal"><div class="modal-content"><div class="modal-title">🎲 ПРОМОКОД ДНЯ</div><div id="dailyPromoCode" style="color:#ffaa00;font-size:24px;"></div><div id="dailyPromoReward"></div><button id="closeDailyPromoBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content" style="max-height:80vh;overflow-y:auto"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="prestigeModal"><div class="modal-content"><div class="modal-title">🔄 ПРЕСТИЖ</div><div id="prestigeInfo"></div><button id="doPrestigeBtn" class="modal-btn">СОВЕРШИТЬ</button><button id="closePrestigeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 500 нейросетей<br>💬 Фейковый чат с ботами<br>📸 Сохранение в фото<br>🔥 Комбо-клик x2<br>🏆 30 достижений</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 500 нейросетей с названиями<br>💬 Фейковый чат с ботами<br>📸 Сохранение в фото<br>🔥 Комбо-клик x2<br>🏆 30 достижений</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon">🔥 Неоновый <span>50💎</span></div><div class="shop-item" data-skin="gold">💎 Золотой <span>100💎</span></div><div class="shop-item" data-skin="rainbow">🌈 Радужный <span>200💎</span></div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="bgModal"><div class="modal-content"><div class="modal-title">🎨 ФОН</div><div class="bg-select"><div class="bg-option" data-bg="cosmos">🌌 Космос</div><div class="bg-option" data-bg="city">🌃 Город</div><div class="bg-option" data-bg="desert">🏜️ Пустыня</div><div class="bg-option" data-bg="ocean">🌊 Океан</div></div><button id="closeBgBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="cheatModal"><div class="modal-content"><div class="modal-title">🔓 DEV</div><input id="cheatInput" class="modal-input" type="password" placeholder="****"><button id="activateCheatBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closeCheatBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="cheatMessage"></div></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "3.5.0";
+    const GAME_VERSION = "3.5.1";
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         location.reload();
     }
+    
+    // Показываем версию в меню
+    document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
     // ОСНОВНЫЕ ПЕРЕМЕННЫЕ
     let points = 100, prestige = 0, totalSpent = 0, purchasedCount = 0, diamonds = 0;
@@ -566,11 +575,42 @@
     let soundEnabled = false, nightMode = false;
 
     // ========== 500 НЕЙРОСЕТЕЙ ==========
+    const namesList = [
+        "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
+        "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
+        "🧠 Gemini", "👾 Нейро-интерфейс", "🤯 Claude 3", "🌌 Мультивселенная", "👁️ Midjourney",
+        "💎 Легендарная", "🌀 Сингулярность", "🔱 Божественный ИИ", "🌍 Нейро-Земля", "☀️ ИИ-Солнце",
+        "🪐 Галактическая", "🌌 Космическая", "⚡ Сверхразум", "🧬 ДНК-бота", "♾️ Бесконечность",
+        "👑 Всемогущий", "🌀 Абсолют", "🔥 Нейро-огонь", "❄️ Нейро-лёд", "🌪️ Нейро-буря",
+        "💀 Некросеть", "🦾 Кибер-мозг", "👁️ Всевидящий", "🎭 Нейро-мимик", "⚛️ Квантовый разум",
+        "📡 Сеть-шпион", "🛸 Пришелец", "🤖 Терминатор", "🧬 Эволюционист", "🌟 Звёздный",
+        "🌙 Лунный", "☀️ Солнечный", "🪐 Планетарный", "🌌 Галактический", "♾️ Бесконечный",
+        "👑 Королевский", "🔮 Магический", "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный",
+        "💀 Апокалипсис", "🧠 Нейро-титан", "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон",
+        "🌪️ Ураган", "🦾 Ассасин", "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция",
+        "🤖 Аватар", "🌀 Хаос", "💎 Алмазный", "👑 Император", "🌌 Звёздный странник",
+        "⚛️ Атомный", "🔮 Пророк", "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный",
+        "❄️ Морозный", "🌪️ Штормовой", "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд",
+        "⚡ Сверхновая", "🌍 Пандора", "🌀 Аномалия", "👾 Вторжение", "🔱 Посейдон",
+        "⚡ Зевс", "🔥 Прометей", "🌙 Артемида", "☀️ Ра", "🪐 Кронос",
+        "💎 Мадагаскар", "🧬 Клон", "🎭 Маска", "👑 Царь", "🌌 Андромеда"
+    ];
+    
     let upgrades = [];
-    for(let i=0; i<500; i++){
-        let power = i===0 ? 1 : Math.floor(Math.pow(i+1, 1.25));
-        let price = i===0 ? 20 : Math.floor(20 * Math.pow(1.25, i));
-        upgrades.push({ id: i, name: `🧠 Нейросеть #${i+1}`, power: power, price: price, purchased: false });
+    for(let i = 0; i < 500; i++){
+        let name;
+        if(i < namesList.length){
+            name = namesList[i];
+        } else {
+            const prefixes = ["🔥", "💎", "⚡", "🌀", "🌟", "⭐", "✨", "💫", "🔷", "🔶"];
+            const suffixes = ["Ультра", "Мега", "Гига", "Тера", "Пета", "Экса", "Зетта", "Йотта", "Бесконечный", "Абсолютный"];
+            let p = prefixes[i % prefixes.length];
+            let s = suffixes[Math.floor(Math.random() * suffixes.length)];
+            name = `${p} Нейросеть ${s} #${i+1}`;
+        }
+        let power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.25));
+        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.25, i));
+        upgrades.push({ id: i, name: name, power: power, price: price, purchased: false });
     }
 
     // ДОСТИЖЕНИЯ
@@ -614,7 +654,7 @@
         let text = input.value.trim();
         if(!text) return;
         if(text.startsWith('/stats')){
-            text = `⭐ Очки: ${Math.floor(points)} | Престиж: ${prestige} | Сетей: ${purchasedCount} | Алмазов: ${diamonds}`;
+            text = `⭐ Очки: ${Math.floor(points)} | Престиж: ${prestige} | Сетей: ${purchasedCount}/500 | Алмазов: ${diamonds}`;
         }
         chatMessages.push({ user: "Вы", text: text, time: new Date().toLocaleTimeString() });
         localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
@@ -742,12 +782,14 @@
     }
 
     function renderUpgrades(){
-        let html='';
-        upgrades.slice(0,100).forEach(up=>{
-            let disabled = (!up.purchased && points>=up.price) ? '' : 'purchased';
-            html+=`<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased?'✅':`💰 ${up.price}`}</span></div>`;
-        });
-        document.getElementById('upgradesContainer').innerHTML=html;
+        let html = '';
+        let displayCount = Math.min(upgrades.length, 100);
+        for(let i = 0; i < displayCount; i++){
+            let up = upgrades[i];
+            let disabledClass = (!up.purchased && points >= up.price) ? '' : 'purchased';
+            html += `<div class="upgrade-card ${disabledClass}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased ? '✅' : `💰 ${up.price}`}</span></div>`;
+        }
+        document.getElementById('upgradesContainer').innerHTML = html;
     }
 
     function buyUpgrade(id){
