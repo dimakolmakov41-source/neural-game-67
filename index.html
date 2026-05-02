@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | 100 сетей + ЧИТ</title>
+    <title>🧠 Эволюция Нейросетей | 100 сетей + Щадящий риск</title>
     <style>
         * {
             margin: 0;
@@ -231,6 +231,19 @@
             cursor: pointer;
             margin: 10px 0;
             animation: pulse 2s infinite;
+            transition: 0.1s;
+        }
+
+        .risk-btn.win-flash {
+            background: linear-gradient(145deg, #00aa44, #006622);
+            border-color: #aaffaa;
+            transform: scale(1.02);
+        }
+
+        .risk-btn.lose-flash {
+            background: linear-gradient(145deg, #aa0044, #660022);
+            border-color: #ffaaaa;
+            transform: scale(0.98);
         }
 
         @keyframes pulse {
@@ -475,7 +488,7 @@
         </div>
         <div class="click-hint" id="clickHint">+1</div>
 
-        <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или x0.5)</div>
+        <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 | -10%)</div>
 
         <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (100 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
@@ -518,16 +531,16 @@
     <div class="modal-content">
         <div class="modal-title">📢 ЧТО НОВОГО?</div>
         <div class="news-list">
-            <div class="news-item">✨ 100 нейросетей!</div>
-            <div class="news-item">🔓 DEV-режим с читом (пароль 8217)</div>
+            <div class="news-item">🎲 НОВЫЙ РИСК: проигрыш -10% ставки!</div>
+            <div class="news-item">💬 Случайные фразы при победе/проигрыше</div>
+            <div class="news-item">✨ 100 нейросетей (дохуя)</div>
+            <div class="news-item">🎮 Чит-код 8217 в DEV-меню</div>
             <div class="news-item">✨ Добавлена система престижа</div>
             <div class="news-item">🎫 Вернулись промокоды</div>
-            <div class="news-item">🏠 Добавлено главное меню</div>
             <div class="news-item">💎 Новая валюта — АЛМАЗЫ!</div>
             <div class="news-item">🛒 Магазин скинов</div>
             <div class="news-item">⏱️ Бонус по таймеру каждые 10 минут</div>
-            <div class="news-item">🎨 Смена фона (Космос, Город, Пустыня, Океан)</div>
-            <div class="news-item">🔄 Автоматическая перезагрузка при обновлении</div>
+            <div class="news-item">🎨 Смена фона</div>
         </div>
         <button class="modal-btn" id="closeNewsBtn">ЗАКРЫТЬ</button>
     </div>
@@ -581,7 +594,7 @@
 <script>
     (function() {
         // ========== АВТОМАТИЧЕСКАЯ ПЕРЕЗАГРУЗКА ==========
-        const GAME_VERSION = "3.1.0";
+        const GAME_VERSION = "3.2.0";
         
         const savedVersion = localStorage.getItem('gameVersion');
         if (savedVersion !== GAME_VERSION) {
@@ -605,10 +618,26 @@
         
         let skins = { neon: false, gold: false, rainbow: false };
         
+        // Рандомные фразы — моя дохуя полезная хуйня
+        const winPhrases = [
+            "🔥 Ты ебашишь!", "🎉 Охуенный выигрыш!", "💪 Так держать, боец!",
+            "🤘 Нейросети ликуют!", "💰 Бабло побеждает зло!", "🧠 Мозг красавчик!",
+            "✨ Повезло, сука!", "🎲 Риск — дело благородное!", "⚡ Ты в ударе, Дима!"
+        ];
+        
+        const losePhrases = [
+            "😭 В следующий раз повезёт!", "💀 Обидно, но не смертельно...", "🤡 Бывает, братан.",
+            "🔄 Не ссы, отыграешься!", "📉 Жестко, но ты сильнее!", "🧘 Не парься, всего 10%.",
+            "🎯 В следующий раз порвёшь!", "💔 Досадно, ну такое...", "⚰️ Проигрыш, но не конец!"
+        ];
+        
+        function getRandomPhrase(phrases) {
+            return phrases[Math.floor(Math.random() * phrases.length)];
+        }
+        
         // ========== 100 НЕЙРОСЕТЕЙ ==========
         const upgrades = [];
         const names = [
-            // Первые 50
             "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
             "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
             "🧠 Gemini", "👾 Нейро-интерфейс", "🤯 Claude 3", "🌌 Мультивселенная", "👁️ Midjourney",
@@ -619,7 +648,6 @@
             "📡 Сеть-шпион", "🛸 Пришелец", "🤖 Терминатор", "🧬 Эволюционист", "🌟 Звёздный",
             "🌙 Лунный", "☀️ Солнечный", "🪐 Планетарный", "🌌 Галактический", "♾️ Бесконечный",
             "👑 Королевский", "🔮 Магический", "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный",
-            // Новые 50 (51-100)
             "💀 Апокалипсис", "🧠 Нейро-титан", "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон",
             "🌪️ Ураган", "🦾 Ассасин", "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция",
             "🤖 Аватар", "🌀 Хаос", "💎 Алмазный", "👑 Император", "🌌 Звёздный странник",
@@ -816,29 +844,35 @@
             if (navigator.vibrate) navigator.vibrate(20);
         }
         
+        // ========== НОВЫЙ РИСК (ЩАДЯЩИЙ, ЕБАТЬ) ==========
         function riskGame() {
             if (points < 10) {
                 alert("❌ Нужно минимум 10 очков для риска!");
                 return;
             }
             
-            const chance = Math.random();
-            const isWin = chance < 0.5;
+            const bet = Math.floor(points / 2);
+            const isWin = Math.random() < 0.5;
+            const btn = document.getElementById('riskBtn');
             
             if (isWin) {
-                const gain = points;
-                points += gain;
-                alert(`🎉 ПОБЕДА! Вы удвоили очки!\n+${gain} очков!`);
+                points += bet;
+                const phrase = getRandomPhrase(winPhrases);
+                alert(`🎉 ПОБЕДА! ${phrase}\n+${bet} очков!`);
+                btn.classList.add('win-flash');
+                setTimeout(() => btn.classList.remove('win-flash'), 300);
             } else {
-                const loss = Math.floor(points / 2);
+                const loss = Math.floor(bet * 0.1);
                 points -= loss;
-                alert(`💀 ПОРАЖЕНИЕ! Вы потеряли половину очков!\n-${loss} очков!`);
+                const phrase = getRandomPhrase(losePhrases);
+                alert(`💀 ПОРАЖЕНИЕ! ${phrase}\n-${loss} очков (всего 10% от ставки!)`);
+                btn.classList.add('lose-flash');
+                setTimeout(() => btn.classList.remove('lose-flash'), 300);
             }
             
             updateUI();
             saveGame();
             
-            const btn = document.getElementById('riskBtn');
             btn.style.transform = 'scale(0.95)';
             setTimeout(() => btn.style.transform = '', 200);
             if (navigator.vibrate) navigator.vibrate(100);
@@ -904,7 +938,6 @@
             alert(`🌌 Фон изменён!`);
         }
         
-        // ========== ЧИТ-ФУНКЦИЯ ==========
         function activateCheat() {
             const password = document.getElementById('cheatInput').value;
             if (password === "8217") {
@@ -1007,4 +1040,4 @@
     })();
 </script>
 </body>
-            </html>
+</html>
