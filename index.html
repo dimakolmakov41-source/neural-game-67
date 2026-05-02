@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | 100 сетей + Щадящий риск</title>
+    <title>🧠 Эволюция Нейросетей 3.3.0 | Комбо + Достижения</title>
     <style>
         * {
             margin: 0;
@@ -20,13 +20,33 @@
             justify-content: center;
             min-height: 100vh;
             padding: 10px;
-            transition: background 0.5s;
+            transition: background 0.3s, background-color 0.3s;
+        }
+
+        body.night-mode {
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+        }
+
+        body.night-mode .game-container {
+            background: rgba(0, 0, 0, 0.85);
+            border-color: #444;
+        }
+
+        body.night-mode .upgrade-card,
+        body.night-mode .stats-panel,
+        body.night-mode .diamond-bar,
+        body.night-mode .top-bar {
+            background: rgba(0, 0, 0, 0.7);
         }
 
         body.bg-cosmos { background: linear-gradient(145deg, #0a0a2a, #1a1a4a); }
         body.bg-city { background: linear-gradient(145deg, #1a2a3a, #2a3a4a); }
         body.bg-desert { background: linear-gradient(145deg, #c9a87b, #8b5a2b); }
         body.bg-ocean { background: linear-gradient(145deg, #004466, #0088aa); }
+        body.night-mode.bg-cosmos { background: linear-gradient(145deg, #020210, #0a0a2a); }
+        body.night-mode.bg-city { background: linear-gradient(145deg, #0a0a1a, #1a1a2a); }
+        body.night-mode.bg-desert { background: linear-gradient(145deg, #3a2a1a, #2a1a0a); }
+        body.night-mode.bg-ocean { background: linear-gradient(145deg, #001133, #002244); }
 
         .game-container {
             width: 100%;
@@ -36,6 +56,7 @@
             border-radius: 48px;
             border: 1px solid rgba(100, 180, 255, 0.3);
             padding: 20px 16px;
+            transition: all 0.3s;
         }
 
         .main-menu {
@@ -126,17 +147,6 @@
             gap: 8px;
         }
 
-        .diamond-icon {
-            background: #00c3ff;
-            width: 30px;
-            height: 30px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
         .stats-panel {
             background: #0a1b2e;
             border-radius: 40px;
@@ -144,7 +154,8 @@
             margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
-            border: 1px solid #4a8ac9;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .stat-item {
@@ -160,6 +171,35 @@
         .stat-label {
             color: #aac8f0;
             font-size: 10px;
+        }
+
+        .combo-bar {
+            background: linear-gradient(145deg, #ff8800, #aa4400);
+            border-radius: 40px;
+            padding: 8px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ffcc66;
+        }
+
+        .combo-text {
+            font-weight: 800;
+            color: white;
+            font-size: 14px;
+        }
+
+        .combo-value {
+            font-weight: 800;
+            color: #ffff00;
+            font-size: 20px;
+        }
+
+        .combo-timer {
+            font-weight: 800;
+            color: #aaffff;
+            font-size: 16px;
         }
 
         .brain-container {
@@ -183,6 +223,16 @@
             box-shadow: 0 15px 0 #aa4400, 0 0 30px #ffaa00;
             border: 3px solid #ffffaa;
             animation: float 3s ease-in-out infinite;
+        }
+
+        .brain.combo-active {
+            box-shadow: 0 15px 0 #aa4400, 0 0 50px #ff00ff;
+            animation: pulse-combo 0.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-combo {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         @keyframes float {
@@ -231,28 +281,11 @@
             cursor: pointer;
             margin: 10px 0;
             animation: pulse 2s infinite;
-            transition: 0.1s;
-        }
-
-        .risk-btn.win-flash {
-            background: linear-gradient(145deg, #00aa44, #006622);
-            border-color: #aaffaa;
-            transform: scale(1.02);
-        }
-
-        .risk-btn.lose-flash {
-            background: linear-gradient(145deg, #aa0044, #660022);
-            border-color: #ffaaaa;
-            transform: scale(0.98);
         }
 
         @keyframes pulse {
-            0%,100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .risk-btn:active {
-            transform: scale(0.97);
+            0%,100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
         }
 
         .upgrades-title {
@@ -318,6 +351,7 @@
             display: flex;
             gap: 8px;
             margin: 15px 0;
+            flex-wrap: wrap;
         }
 
         .action-btn {
@@ -330,6 +364,7 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
+            color: white;
         }
 
         .save-badge {
@@ -412,13 +447,53 @@
             cursor: pointer;
         }
 
-        .shop-name {
-            color: #c1e4ff;
-            font-weight: 700;
+        .achievement-item {
+            background: #1a3150;
+            border: 2px solid #ffd966;
+            border-radius: 30px;
+            padding: 10px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .shop-price {
+        .achievement-name {
             color: #ffd966;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .achievement-desc {
+            color: #aac8f0;
+            font-size: 10px;
+        }
+
+        .achievement-completed {
+            opacity: 0.6;
+            border-color: #00ff00;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #ffaa00, #ff5500);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            z-index: 2000;
+            animation: fadeOut 3s forwards;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
         }
 
         .bg-select {
@@ -445,6 +520,8 @@
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
+        <div class="menu-btn" id="dailyPromoBtn">🎲 ПРОМО ДНЯ</div>
+        <div class="menu-btn" id="achievementsBtn">🏆 ДОСТИЖЕНИЯ</div>
         <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
         <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
         <div class="menu-btn" id="cheatMenuBtn">🔓 DEV (ЧИТ)</div>
@@ -481,6 +558,17 @@
                 <div class="stat-value" id="prestigeBonus">0%</div>
                 <div class="stat-label">Бонус престижа</div>
             </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalClicks">0</div>
+                <div class="stat-label">Всего кликов</div>
+            </div>
+        </div>
+
+        <div class="combo-bar" id="comboBar">
+            <span class="combo-text">🔥 КОМБО:</span>
+            <span class="combo-value" id="comboCount">0</span>
+            <span class="combo-text">| x2 активен:</span>
+            <span class="combo-timer" id="comboTimer">0.0с</span>
         </div>
 
         <div class="brain-container">
@@ -488,7 +576,7 @@
         </div>
         <div class="click-hint" id="clickHint">+1</div>
 
-        <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 | -10%)</div>
+        <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или -10%)</div>
 
         <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (100 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
@@ -499,6 +587,8 @@
             <div class="action-btn" id="shopBtn">🛒 МАГАЗИН</div>
             <div class="action-btn" id="prestigeGameBtn">🔄 ПРЕСТИЖ</div>
             <div class="action-btn" id="bgBtn">🎨 ФОН</div>
+            <div class="action-btn" id="soundBtn" style="background:#335577;">🔊 ЗВУК ВЫКЛ</div>
+            <div class="action-btn" id="nightModeBtn">🌙 НОЧЬ</div>
         </div>
 
         <div class="save-badge" id="saveBadge">💾 автосохранение</div>
@@ -510,11 +600,26 @@
     <div class="modal-content">
         <div class="modal-title">🎫 ВВЕСТИ ПРОМОКОД</div>
         <input type="text" class="modal-input" id="promoInput" placeholder="ВВЕДИ КОД">
-        <div class="modal-buttons">
-            <button class="modal-btn" id="activatePromoBtn">АКТИВИРОВАТЬ</button>
-            <button class="modal-btn" id="closePromoBtn">ЗАКРЫТЬ</button>
-        </div>
+        <button class="modal-btn" id="activatePromoBtn">АКТИВИРОВАТЬ</button>
+        <button class="modal-btn" id="closePromoBtn">ЗАКРЫТЬ</button>
         <div id="promoMessage" style="color:#b0ffb0; margin-top:10px;"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="dailyPromoModal">
+    <div class="modal-content">
+        <div class="modal-title">🎲 ПРОМОКОД ДНЯ</div>
+        <div id="dailyPromoCode" style="color:#ffaa00; font-size:24px; font-weight:800; margin:15px;"></div>
+        <div id="dailyPromoReward" style="color:#88ff88; margin:10px;"></div>
+        <button class="modal-btn" id="closeDailyPromoBtn">ЗАКРЫТЬ</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="achievementsModal">
+    <div class="modal-content" style="max-width:400px; max-height:80vh; overflow-y:auto;">
+        <div class="modal-title">🏆 ДОСТИЖЕНИЯ</div>
+        <div id="achievementsList"></div>
+        <button class="modal-btn" id="closeAchievementsBtn">ЗАКРЫТЬ</button>
     </div>
 </div>
 
@@ -531,16 +636,13 @@
     <div class="modal-content">
         <div class="modal-title">📢 ЧТО НОВОГО?</div>
         <div class="news-list">
-            <div class="news-item">🎲 НОВЫЙ РИСК: проигрыш -10% ставки!</div>
-            <div class="news-item">💬 Случайные фразы при победе/проигрыше</div>
-            <div class="news-item">✨ 100 нейросетей (дохуя)</div>
-            <div class="news-item">🎮 Чит-код 8217 в DEV-меню</div>
-            <div class="news-item">✨ Добавлена система престижа</div>
-            <div class="news-item">🎫 Вернулись промокоды</div>
-            <div class="news-item">💎 Новая валюта — АЛМАЗЫ!</div>
-            <div class="news-item">🛒 Магазин скинов</div>
-            <div class="news-item">⏱️ Бонус по таймеру каждые 10 минут</div>
-            <div class="news-item">🎨 Смена фона</div>
+            <div class="news-item">🔥 КОМБО-КЛИК: 5 кликов подряд = x2 на 5 сек!</div>
+            <div class="news-item">🔊 ЗВУКИ: писк при клике, бум при риске</div>
+            <div class="news-item">🌙 НОЧНОЙ РЕЖИМ: бережём глаза</div>
+            <div class="news-item">🏆 30 ДОСТИЖЕНИЙ с наградами</div>
+            <div class="news-item">🎲 ЕЖЕДНЕВНЫЙ ПРОМОКОД</div>
+            <div class="news-item">✨ 100 нейросетей</div>
+            <div class="news-item">💎 Алмазы, скины, фоны</div>
         </div>
         <button class="modal-btn" id="closeNewsBtn">ЗАКРЫТЬ</button>
     </div>
@@ -581,30 +683,24 @@
 <div class="modal-overlay" id="cheatModal">
     <div class="modal-content">
         <div class="modal-title">🔓 DEV-ДОСТУП</div>
-        <p style="color:white; margin-bottom:10px;">Введите пароль разработчика:</p>
         <input type="password" class="modal-input" id="cheatInput" placeholder="****">
-        <div class="modal-buttons">
-            <button class="modal-btn" id="activateCheatBtn">АКТИВИРОВАТЬ</button>
-            <button class="modal-btn" id="closeCheatBtn">ЗАКРЫТЬ</button>
-        </div>
+        <button class="modal-btn" id="activateCheatBtn">АКТИВИРОВАТЬ</button>
+        <button class="modal-btn" id="closeCheatBtn">ЗАКРЫТЬ</button>
         <div id="cheatMessage" style="color:#ffaa00; margin-top:10px;"></div>
     </div>
 </div>
 
 <script>
     (function() {
-        // ========== АВТОМАТИЧЕСКАЯ ПЕРЕЗАГРУЗКА ==========
-        const GAME_VERSION = "3.2.0";
+        const GAME_VERSION = "3.3.0";
         
-        const savedVersion = localStorage.getItem('gameVersion');
-        if (savedVersion !== GAME_VERSION) {
+        if (localStorage.getItem('gameVersion') !== GAME_VERSION) {
             localStorage.setItem('gameVersion', GAME_VERSION);
             location.reload();
         }
-        // =================================================
         
+        // Основные переменные
         let points = 100;
-        let clickPower = 1;
         let prestige = 0;
         let totalSpent = 0;
         let purchasedCount = 0;
@@ -613,29 +709,47 @@
         let currentBg = "cosmos";
         let bonusTimer = 600;
         let bonusInterval = null;
-        
         let prestigeBonus = 1;
+        let totalClicks = 0;
         
         let skins = { neon: false, gold: false, rainbow: false };
         
-        // Рандомные фразы — моя дохуя полезная хуйня
-        const winPhrases = [
-            "🔥 Ты ебашишь!", "🎉 Охуенный выигрыш!", "💪 Так держать, боец!",
-            "🤘 Нейросети ликуют!", "💰 Бабло побеждает зло!", "🧠 Мозг красавчик!",
-            "✨ Повезло, сука!", "🎲 Риск — дело благородное!", "⚡ Ты в ударе, Дима!"
-        ];
+        // Комбо-система
+        let comboCount = 0;
+        let comboActive = false;
+        let comboMultiplier = 1;
+        let comboTimer = null;
+        let comboResetTimer = null;
+        let lastClickTime = 0;
         
-        const losePhrases = [
-            "😭 В следующий раз повезёт!", "💀 Обидно, но не смертельно...", "🤡 Бывает, братан.",
-            "🔄 Не ссы, отыграешься!", "📉 Жестко, но ты сильнее!", "🧘 Не парься, всего 10%.",
-            "🎯 В следующий раз порвёшь!", "💔 Досадно, ну такое...", "⚰️ Проигрыш, но не конец!"
-        ];
+        // Звуки
+        let soundEnabled = false;
+        let clickSound = null;
+        let winSound = null;
         
-        function getRandomPhrase(phrases) {
-            return phrases[Math.floor(Math.random() * phrases.length)];
-        }
+        // Ночной режим
+        let nightMode = false;
         
-        // ========== 100 НЕЙРОСЕТЕЙ ==========
+        // Достижения
+        let achievements = {
+            clicks100: { name: "👆 100 кликов", desc: "Сделать 100 кликов", completed: false, reward: 5, progress: 0, target: 100 },
+            clicks1000: { name: "👆👆 1000 кликов", desc: "Сделать 1000 кликов", completed: false, reward: 20, progress: 0, target: 1000 },
+            clicks10000: { name: "🏆 Мастер клика", desc: "Сделать 10000 кликов", completed: false, reward: 100, progress: 0, target: 10000 },
+            upgrades10: { name: "🔄 Первые сети", desc: "Купить 10 нейросетей", completed: false, reward: 10, progress: 0, target: 10 },
+            upgrades50: { name: "🧠 Коллекционер", desc: "Купить 50 нейросетей", completed: false, reward: 50, progress: 0, target: 50 },
+            upgrades100: { name: "👑 Повелитель ИИ", desc: "Купить 100 нейросетей", completed: false, reward: 200, progress: 0, target: 100 },
+            prestige1: { name: "🔄 Первый престиж", desc: "Сделать престиж 1 раз", completed: false, reward: 50, progress: 0, target: 1 },
+            prestige5: { name: "🏅 Ветеран", desc: "Сделать престиж 5 раз", completed: false, reward: 200, progress: 0, target: 5 },
+            riskWin5: { name: "🎲 Везунчик", desc: "Выиграть в риск 5 раз", completed: false, reward: 25, progress: 0, target: 5 },
+            riskWin25: { name: "🎲 Король риска", desc: "Выиграть в риск 25 раз", completed: false, reward: 100, progress: 0, target: 25 },
+            diamonds50: { name: "💎 Первые алмазы", desc: "Накопить 50 алмазов", completed: false, reward: 10, progress: 0, target: 50 },
+            diamonds500: { name: "💎 Алмазный магнат", desc: "Накопить 500 алмазов", completed: false, reward: 100, progress: 0, target: 500 },
+            totalSpent1M: { name: "💰 Миллионер", desc: "Потратить 1 млн очков", completed: false, reward: 50, progress: 0, target: 1000000 },
+            totalSpent10M: { name: "💰 Легенда", desc: "Потратить 10 млн очков", completed: false, reward: 200, progress: 0, target: 10000000 },
+            combo10: { name: "🔥 Комбо-мастер", desc: "Сделать комбо из 10 кликов", completed: false, reward: 20, progress: 0, target: 10 }
+        };
+        
+        // 100 нейросетей
         const upgrades = [];
         const names = [
             "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
@@ -682,6 +796,159 @@
             'legend': { points: 20000, diamonds: 500 }
         };
         
+        const winPhrases = ["🔥 Ты ебашишь!", "🎉 Охуенный выигрыш!", "💪 Так держать!", "🤘 Нейросети ликуют!", "💰 Бабло побеждает зло!"];
+        const losePhrases = ["😭 В следующий раз повезёт!", "💀 Обидно, но не смертельно...", "🤡 Бывает, братан.", "🔄 Не ссы, отыграешься!", "📉 Жестко, но ты сильнее!"];
+        
+        function getRandomPhrase(phrases) { return phrases[Math.floor(Math.random() * phrases.length)]; }
+        
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function updateAchievements() {
+            let changed = false;
+            
+            // Обновляем прогресс достижений
+            achievements.clicks100.progress = totalClicks;
+            achievements.clicks1000.progress = totalClicks;
+            achievements.clicks10000.progress = totalClicks;
+            achievements.upgrades10.progress = purchasedCount;
+            achievements.upgrades50.progress = purchasedCount;
+            achievements.upgrades100.progress = purchasedCount;
+            achievements.prestige1.progress = prestige;
+            achievements.prestige5.progress = prestige;
+            achievements.totalSpent1M.progress = totalSpent;
+            achievements.totalSpent10M.progress = totalSpent;
+            achievements.diamonds50.progress = diamonds;
+            achievements.diamonds500.progress = diamonds;
+            
+            for (let key in achievements) {
+                let ach = achievements[key];
+                if (!ach.completed && ach.progress >= ach.target) {
+                    ach.completed = true;
+                    diamonds += ach.reward;
+                    changed = true;
+                    showToast(`🏆 ДОСТИЖЕНИЕ! ${ach.name} +${ach.reward}💎`);
+                    if (soundEnabled) {
+                        let snd = new Audio("data:audio/wav;base64,U3RlYWx0aCB3YXZlIGZpbGUgLSBzaW1wbGUgYmVlcA==");
+                        snd.play().catch(e=>{});
+                    }
+                }
+            }
+            
+            if (changed) {
+                updateUI();
+                saveGame();
+            }
+        }
+        
+        function startCombo() {
+            if (comboTimer) clearTimeout(comboTimer);
+            if (comboResetTimer) clearTimeout(comboResetTimer);
+            
+            comboCount++;
+            document.getElementById('comboCount').innerText = comboCount;
+            
+            if (comboCount >= 5 && !comboActive) {
+                comboActive = true;
+                comboMultiplier = 2;
+                const brain = document.getElementById('brain');
+                brain.classList.add('combo-active');
+                showToast("🔥 КОМБО x2 АКТИВИРОВАНО! 5 секунд!");
+                if (soundEnabled) {
+                    let snd = new Audio("data:audio/wav;base64,U3RlYWx0aCB3YXZlIGZpbGUgLSBzdWNjZXNz");
+                    snd.play().catch(e=>{});
+                }
+                
+                comboTimer = setTimeout(() => {
+                    comboActive = false;
+                    comboMultiplier = 1;
+                    document.getElementById('brain').classList.remove('combo-active');
+                    document.getElementById('comboTimer').innerText = "0.0с";
+                    showToast("Комбо x2 закончился");
+                }, 5000);
+            }
+            
+            if (comboActive) {
+                const startTime = Date.now();
+                const timerInterval = setInterval(() => {
+                    if (!comboActive) {
+                        clearInterval(timerInterval);
+                        return;
+                    }
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const remaining = Math.max(0, 5 - elapsed);
+                    document.getElementById('comboTimer').innerText = remaining.toFixed(1) + "с";
+                    if (remaining <= 0) clearInterval(timerInterval);
+                }, 100);
+            }
+            
+            comboResetTimer = setTimeout(() => {
+                if (!comboActive) {
+                    comboCount = 0;
+                    document.getElementById('comboCount').innerText = "0";
+                }
+            }, 3000);
+        }
+        
+        function initSounds() {
+            try {
+                clickSound = new Audio();
+                winSound = new Audio();
+            } catch(e) { console.log("Звуки не поддерживаются"); }
+        }
+        
+        function playClickSound() {
+            if (!soundEnabled) return;
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                let gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 880;
+                gain.gain.value = 0.1;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.3);
+                osc.stop(ctx.currentTime + 0.3);
+                ctx.close();
+            } catch(e) {}
+        }
+        
+        function playWinSound() {
+            if (!soundEnabled) return;
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                let gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 440;
+                gain.gain.value = 0.2;
+                osc.start();
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.5);
+                osc.stop(ctx.currentTime + 0.5);
+                ctx.close();
+            } catch(e) {}
+        }
+        
+        function toggleNightMode() {
+            nightMode = !nightMode;
+            if (nightMode) {
+                document.body.classList.add('night-mode');
+                document.getElementById('nightModeBtn').innerHTML = '☀️ ДЕНЬ';
+            } else {
+                document.body.classList.remove('night-mode');
+                document.getElementById('nightModeBtn').innerHTML = '🌙 НОЧЬ';
+            }
+            saveGame();
+        }
+        
         function startBonusTimer() {
             if (bonusInterval) clearInterval(bonusInterval);
             bonusInterval = setInterval(() => {
@@ -694,7 +961,7 @@
                         diamonds += 50;
                         updateUI();
                         saveGame();
-                        alert("⏱️ БОНУС! +50 алмазов!");
+                        showToast("⏱️ БОНУС! +50 алмазов!");
                         bonusTimer = 600;
                     }
                 }
@@ -703,14 +970,14 @@
         
         function saveGame() {
             const saveData = {
-                points, clickPower, prestige, totalSpent, purchasedCount, diamonds, currentSkin, currentBg, skins,
-                upgrades: upgrades.map(u => u.purchased)
+                points, prestige, totalSpent, purchasedCount, diamonds, currentSkin, currentBg, skins, nightMode, totalClicks,
+                upgrades: upgrades.map(u => u.purchased),
+                achievements: achievements,
+                soundEnabled
             };
             localStorage.setItem('neuralEvoSave', JSON.stringify(saveData));
             document.getElementById('saveBadge').innerText = '💾 сохранено!';
-            setTimeout(() => {
-                document.getElementById('saveBadge').innerText = '💾 автосохранение';
-            }, 1000);
+            setTimeout(() => document.getElementById('saveBadge').innerText = '💾 автосохранение', 1000);
         }
         
         function loadGame() {
@@ -719,7 +986,6 @@
                 try {
                     const data = JSON.parse(saved);
                     points = data.points || 100;
-                    clickPower = data.clickPower || 1;
                     prestige = data.prestige || 0;
                     totalSpent = data.totalSpent || 0;
                     purchasedCount = data.purchasedCount || 0;
@@ -727,17 +993,29 @@
                     currentSkin = data.currentSkin || "🧠";
                     currentBg = data.currentBg || "cosmos";
                     skins = data.skins || { neon: false, gold: false, rainbow: false };
+                    nightMode = data.nightMode || false;
+                    totalClicks = data.totalClicks || 0;
+                    soundEnabled = data.soundEnabled || false;
                     if (data.upgrades) {
                         data.upgrades.forEach((purchased, i) => {
                             if (upgrades[i]) upgrades[i].purchased = purchased;
                         });
                     }
+                    if (data.achievements) {
+                        for (let key in data.achievements) {
+                            if (achievements[key]) achievements[key].completed = data.achievements[key].completed;
+                        }
+                    }
                 } catch(e) {}
             }
             document.getElementById('brain').innerText = currentSkin;
+            document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
+            if (nightMode) toggleNightMode();
             applyBackground();
             updateUI();
             renderUpgrades();
+            updatePrestigeBonus();
+            updateAchievements();
         }
         
         function applyBackground() {
@@ -751,10 +1029,10 @@
         
         function getClickPowerWithBonus() {
             let basePower = 1;
-            upgrades.forEach(up => {
-                if (up.purchased) basePower += up.power;
-            });
-            return Math.floor(basePower * prestigeBonus);
+            upgrades.forEach(up => { if (up.purchased) basePower += up.power; });
+            let power = Math.floor(basePower * prestigeBonus);
+            if (comboActive) power *= comboMultiplier;
+            return power;
         }
         
         function updateUI() {
@@ -762,11 +1040,12 @@
             document.getElementById('points').innerText = Math.floor(points);
             document.getElementById('power').innerText = finalPower;
             document.getElementById('prestigeLevel').innerText = prestige;
-            document.getElementById('clickHint').innerText = `+${finalPower}`;
+            document.getElementById('clickHint').innerHTML = comboActive ? `+${finalPower} (x2 КОМБО!)` : `+${finalPower}`;
             document.getElementById('netCount').innerText = purchasedCount;
             document.getElementById('totalSpent').innerText = totalSpent;
             document.getElementById('prestigeBonus').innerText = Math.floor((prestigeBonus - 1) * 100) + '%';
             document.getElementById('diamonds').innerText = diamonds;
+            document.getElementById('totalClicks').innerText = totalClicks;
         }
         
         function renderUpgrades() {
@@ -775,15 +1054,7 @@
                 const canAfford = points >= up.price;
                 const disabled = (!canAfford || up.purchased) ? 'purchased' : '';
                 const priceDisplay = up.purchased ? '✅' : `💰 ${up.price}`;
-                html += `
-                    <div class="upgrade-card ${disabled}" data-id="${up.id}">
-                        <div class="upgrade-info">
-                            <span class="upgrade-name">${up.name}</span>
-                            <span class="upgrade-desc">+${up.power}</span>
-                        </div>
-                        <div class="upgrade-price">${priceDisplay}</div>
-                    </div>
-                `;
+                html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><div><span class="upgrade-name">${up.name}</span><span class="upgrade-desc"> +${up.power}</span></div><div class="upgrade-price">${priceDisplay}</div></div>`;
             });
             document.getElementById('upgradesContainer').innerHTML = html;
         }
@@ -791,22 +1062,21 @@
         function buyUpgrade(id) {
             const up = upgrades.find(u => u.id === id);
             if (!up || up.purchased || points < up.price) return false;
-            
             points -= up.price;
             totalSpent += up.price;
             up.purchased = true;
             purchasedCount++;
-            
             updateUI();
             renderUpgrades();
             saveGame();
+            updateAchievements();
             return true;
         }
         
         function showClickEffect(x, y, value) {
             const effect = document.createElement('div');
             effect.className = 'click-effect';
-            effect.innerText = `+${value}`;
+            effect.innerText = comboActive ? `+${value} 🔥` : `+${value}`;
             effect.style.left = x + 'px';
             effect.style.top = y + 'px';
             document.body.appendChild(effect);
@@ -815,7 +1085,6 @@
         
         function handleBrainClick(e) {
             e.preventDefault();
-            
             let clientX, clientY;
             if (e.touches) {
                 clientX = e.touches[0].clientX;
@@ -827,13 +1096,16 @@
             
             const gain = getClickPowerWithBonus();
             points += gain;
+            totalClicks++;
             
             if (Math.random() < 0.01) {
                 diamonds++;
-                alert("💎 ВЫПАЛ АЛМАЗ! +1💎");
+                showToast("💎 ВЫПАЛ АЛМАЗ! +1💎");
             }
             
+            startCombo();
             showClickEffect(clientX, clientY, gain);
+            playClickSound();
             
             const brain = document.getElementById('brain');
             brain.style.transform = 'translateY(8px)';
@@ -841,13 +1113,13 @@
             
             updateUI();
             saveGame();
+            updateAchievements();
             if (navigator.vibrate) navigator.vibrate(20);
         }
         
-        // ========== НОВЫЙ РИСК (ЩАДЯЩИЙ, ЕБАТЬ) ==========
         function riskGame() {
             if (points < 10) {
-                alert("❌ Нужно минимум 10 очков для риска!");
+                showToast("❌ Нужно минимум 10 очков для риска!");
                 return;
             }
             
@@ -858,29 +1130,35 @@
             if (isWin) {
                 points += bet;
                 const phrase = getRandomPhrase(winPhrases);
-                alert(`🎉 ПОБЕДА! ${phrase}\n+${bet} очков!`);
-                btn.classList.add('win-flash');
-                setTimeout(() => btn.classList.remove('win-flash'), 300);
+                showToast(`🎉 ПОБЕДА! ${phrase} +${bet} очков!`);
+                if (soundEnabled) playWinSound();
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                btn.style.background = "linear-gradient(145deg, #00aa44, #006622)";
+                setTimeout(() => btn.style.background = "linear-gradient(145deg, #ff4444, #aa0000)", 300);
+                
+                let riskWins = JSON.parse(localStorage.getItem('riskWins') || '0');
+                riskWins++;
+                localStorage.setItem('riskWins', riskWins);
+                achievements.riskWin5.progress = riskWins;
+                achievements.riskWin25.progress = riskWins;
+                updateAchievements();
             } else {
                 const loss = Math.floor(bet * 0.1);
                 points -= loss;
                 const phrase = getRandomPhrase(losePhrases);
-                alert(`💀 ПОРАЖЕНИЕ! ${phrase}\n-${loss} очков (всего 10% от ставки!)`);
-                btn.classList.add('lose-flash');
-                setTimeout(() => btn.classList.remove('lose-flash'), 300);
+                showToast(`💀 ПОРАЖЕНИЕ! ${phrase} -${loss} очков`);
+                btn.style.background = "linear-gradient(145deg, #aa0044, #660022)";
+                setTimeout(() => btn.style.background = "linear-gradient(145deg, #ff4444, #aa0000)", 300);
             }
             
             updateUI();
             saveGame();
-            
-            btn.style.transform = 'scale(0.95)';
-            setTimeout(() => btn.style.transform = '', 200);
             if (navigator.vibrate) navigator.vibrate(100);
         }
         
         function doPrestige() {
             if (points < 10000) {
-                alert(`❌ Нужно 10000 очков для престижа! У вас ${Math.floor(points)}`);
+                showToast(`❌ Нужно 10000 очков для престижа! У вас ${Math.floor(points)}`);
                 return;
             }
             
@@ -894,7 +1172,8 @@
                 updateUI();
                 renderUpgrades();
                 saveGame();
-                alert(`✨ ПРЕСТИЖ ${prestige}! Бонус +${prestige*10}% к силе клика!`);
+                showToast(`✨ ПРЕСТИЖ ${prestige}! Бонус +${prestige*10}% к силе клика!`);
+                updateAchievements();
                 document.getElementById('prestigeModal').classList.remove('show');
             }
         }
@@ -907,14 +1186,73 @@
                 diamonds += promo.diamonds;
                 updateUI();
                 saveGame();
-                document.getElementById('promoMessage').innerText = `✅ +${promo.points} очков, +${promo.diamonds}💎!`;
+                document.getElementById('promoMessage').innerHTML = `✅ +${promo.points} очков, +${promo.diamonds}💎!`;
             } else {
-                document.getElementById('promoMessage').innerText = '❌ Неверный промокод!';
+                document.getElementById('promoMessage').innerHTML = '❌ Неверный промокод!';
             }
             document.getElementById('promoInput').value = '';
-            setTimeout(() => {
-                document.getElementById('promoMessage').innerText = '';
-            }, 3000);
+            setTimeout(() => document.getElementById('promoMessage').innerHTML = '', 3000);
+        }
+        
+        function showDailyPromo() {
+            const today = new Date().toDateString();
+            const savedDaily = localStorage.getItem('dailyPromoDate');
+            let dailyCode, dailyReward;
+            
+            if (savedDaily === today) {
+                dailyCode = localStorage.getItem('dailyPromoCode');
+                dailyReward = localStorage.getItem('dailyPromoReward');
+            } else {
+                const codes = ['супернейросеть', 'кликер2025', 'иирулит', '100нейросетей', 'диматоп', 'алмазныйдождь'];
+                dailyCode = codes[Math.floor(Math.random() * codes.length)];
+                const pointsReward = Math.floor(Math.random() * 5000) + 1000;
+                const diamondsReward = Math.floor(Math.random() * 50) + 10;
+                dailyReward = `${pointsReward} очков, ${diamondsReward}💎`;
+                localStorage.setItem('dailyPromoDate', today);
+                localStorage.setItem('dailyPromoCode', dailyCode);
+                localStorage.setItem('dailyPromoReward', dailyReward);
+                localStorage.setItem('dailyPromoPoints', pointsReward);
+                localStorage.setItem('dailyPromoDiamonds', diamondsReward);
+            }
+            
+            document.getElementById('dailyPromoCode').innerHTML = dailyCode;
+            document.getElementById('dailyPromoReward').innerHTML = `Награда: ${dailyReward}`;
+            document.getElementById('dailyPromoModal').classList.add('show');
+            
+            const activateDaily = () => {
+                const pointsReward = parseInt(localStorage.getItem('dailyPromoPoints')) || 1000;
+                const diamondsReward = parseInt(localStorage.getItem('dailyPromoDiamonds')) || 10;
+                points += pointsReward;
+                diamonds += diamondsReward;
+                updateUI();
+                saveGame();
+                showToast(`🎁 Промокод дня активирован! +${pointsReward} очков, +${diamondsReward}💎`);
+                document.getElementById('dailyPromoModal').classList.remove('show');
+                dailyBtn.removeEventListener('click', activateDaily);
+            };
+            
+            const dailyBtn = document.getElementById('activateDailyPromoBtn');
+            if (dailyBtn) dailyBtn.remove();
+            const newBtn = document.createElement('button');
+            newBtn.id = 'activateDailyPromoBtn';
+            newBtn.className = 'modal-btn';
+            newBtn.innerText = 'АКТИВИРОВАТЬ';
+            newBtn.addEventListener('click', activateDaily);
+            document.getElementById('dailyPromoReward').after(newBtn);
+        }
+        
+        function showAchievements() {
+            let html = '';
+            for (let key in achievements) {
+                let ach = achievements[key];
+                let status = ach.completed ? '✅' : `📊 ${ach.progress}/${ach.target}`;
+                html += `<div class="achievement-item ${ach.completed ? 'achievement-completed' : ''}">
+                            <div><div class="achievement-name">${ach.name}</div><div class="achievement-desc">${ach.desc}</div></div>
+                            <div>${status} ${ach.completed ? `+${ach.reward}💎` : ''}</div>
+                         </div>`;
+            }
+            document.getElementById('achievementsList').innerHTML = html;
+            document.getElementById('achievementsModal').classList.add('show');
         }
         
         function buySkin(skinName, price, skinEmoji) {
@@ -925,9 +1263,9 @@
                 document.getElementById('brain').innerText = currentSkin;
                 updateUI();
                 saveGame();
-                alert(`✅ Куплен скин ${skinEmoji}!`);
+                showToast(`✅ Куплен скин ${skinEmoji}!`);
             } else {
-                alert(`❌ Нужно ${price}💎!`);
+                showToast(`❌ Нужно ${price}💎!`);
             }
         }
         
@@ -935,17 +1273,17 @@
             currentBg = bg;
             applyBackground();
             saveGame();
-            alert(`🌌 Фон изменён!`);
+            showToast(`🌌 Фон изменён!`);
         }
         
         function activateCheat() {
             const password = document.getElementById('cheatInput').value;
             if (password === "8217") {
                 points += 100000;
+                diamonds += 100;
                 updateUI();
                 saveGame();
-                document.getElementById('cheatMessage').innerHTML = '✅ ЧИТ АКТИВИРОВАН! +100 000 очков!';
-                console.log("%c✅ Чит активирован, Дима! +100 000 очков", "color: #00ff00; font-size: 16px;");
+                document.getElementById('cheatMessage').innerHTML = '✅ ЧИТ АКТИВИРОВАН! +100 000 очков, +100💎!';
                 setTimeout(() => {
                     document.getElementById('cheatModal').classList.remove('show');
                     document.getElementById('cheatInput').value = '';
@@ -953,9 +1291,7 @@
                 }, 1500);
             } else {
                 document.getElementById('cheatMessage').innerHTML = '❌ Неверный пароль!';
-                setTimeout(() => {
-                    document.getElementById('cheatMessage').innerHTML = '';
-                }, 2000);
+                setTimeout(() => document.getElementById('cheatMessage').innerHTML = '', 2000);
             }
         }
         
@@ -971,31 +1307,40 @@
             if (bonusInterval) clearInterval(bonusInterval);
         }
         
-        function showPromoModal() { document.getElementById('promoModal').classList.add('show'); }
-        function showPrestigeModal() { document.getElementById('prestigeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для престижа<br>Текущий престиж: ${prestige}<br>Следующий бонус: +10%`; document.getElementById('prestigeModal').classList.add('show'); }
-        function showNewsModal() { document.getElementById('newsModal').classList.add('show'); }
-        function showShopModal() { document.getElementById('shopModal').classList.add('show'); }
-        function showBgModal() { document.getElementById('bgModal').classList.add('show'); }
-        function showCheatModal() { document.getElementById('cheatModal').classList.add('show'); }
-        
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('show'); }
         
         function init() {
+            initSounds();
             loadGame();
             startBonusTimer();
             
             document.getElementById('playBtn').addEventListener('click', showGame);
-            document.getElementById('promoMenuBtn').addEventListener('click', showPromoModal);
-            document.getElementById('newsMenuBtn').addEventListener('click', showNewsModal);
-            document.getElementById('prestigeMenuBtn').addEventListener('click', showPrestigeModal);
-            document.getElementById('cheatMenuBtn').addEventListener('click', showCheatModal);
+            document.getElementById('promoMenuBtn').addEventListener('click', () => document.getElementById('promoModal').classList.add('show'));
+            document.getElementById('dailyPromoBtn').addEventListener('click', showDailyPromo);
+            document.getElementById('achievementsBtn').addEventListener('click', showAchievements);
+            document.getElementById('newsMenuBtn').addEventListener('click', () => document.getElementById('newsModal').classList.add('show'));
+            document.getElementById('prestigeMenuBtn').addEventListener('click', () => {
+                document.getElementById('prestigeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для престижа<br>Текущий престиж: ${prestige}<br>Следующий бонус: +10%`;
+                document.getElementById('prestigeModal').classList.add('show');
+            });
+            document.getElementById('cheatMenuBtn').addEventListener('click', () => document.getElementById('cheatModal').classList.add('show'));
             
             document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
-            document.getElementById('promoGameBtn').addEventListener('click', showPromoModal);
-            document.getElementById('prestigeGameBtn').addEventListener('click', showPrestigeModal);
-            document.getElementById('shopBtn').addEventListener('click', showShopModal);
-            document.getElementById('bgBtn').addEventListener('click', showBgModal);
+            document.getElementById('promoGameBtn').addEventListener('click', () => document.getElementById('promoModal').classList.add('show'));
+            document.getElementById('shopBtn').addEventListener('click', () => document.getElementById('shopModal').classList.add('show'));
+            document.getElementById('prestigeGameBtn').addEventListener('click', () => {
+                document.getElementById('prestigeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для престижа<br>Текущий престиж: ${prestige}<br>Следующий бонус: +10%`;
+                document.getElementById('prestigeModal').classList.add('show');
+            });
+            document.getElementById('bgBtn').addEventListener('click', () => document.getElementById('bgModal').classList.add('show'));
             document.getElementById('riskBtn').addEventListener('click', riskGame);
+            document.getElementById('soundBtn').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
+                saveGame();
+                showToast(soundEnabled ? "Звук включен" : "Звук выключен");
+            });
+            document.getElementById('nightModeBtn').addEventListener('click', toggleNightMode);
             
             document.getElementById('brain').addEventListener('mousedown', handleBrainClick);
             document.getElementById('brain').addEventListener('touchstart', handleBrainClick, { passive: false });
@@ -1009,6 +1354,8 @@
             
             document.getElementById('activatePromoBtn').addEventListener('click', activatePromo);
             document.getElementById('closePromoBtn').addEventListener('click', () => closeModal('promoModal'));
+            document.getElementById('closeDailyPromoBtn').addEventListener('click', () => closeModal('dailyPromoModal'));
+            document.getElementById('closeAchievementsBtn').addEventListener('click', () => closeModal('achievementsModal'));
             document.getElementById('closePrestigeBtn').addEventListener('click', () => closeModal('prestigeModal'));
             document.getElementById('closeNewsBtn').addEventListener('click', () => closeModal('newsModal'));
             document.getElementById('closeShopBtn').addEventListener('click', () => closeModal('shopModal'));
@@ -1025,7 +1372,7 @@
                 btn.addEventListener('click', () => setBackground(btn.dataset.bg));
             });
             
-            const modals = ['promoModal', 'prestigeModal', 'newsModal', 'shopModal', 'bgModal', 'cheatModal'];
+            const modals = ['promoModal', 'dailyPromoModal', 'achievementsModal', 'prestigeModal', 'newsModal', 'shopModal', 'bgModal', 'cheatModal'];
             modals.forEach(id => {
                 document.getElementById(id).addEventListener('click', (e) => {
                     if (e.target === document.getElementById(id)) closeModal(id);
@@ -1040,4 +1387,4 @@
     })();
 </script>
 </body>
-</html>
+                                       </html>
