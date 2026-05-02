@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей</title>
+    <title>🧠 Эволюция Нейросетей | 100 сетей + ЧИТ</title>
     <style>
         * {
             margin: 0;
@@ -434,6 +434,7 @@
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
         <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
         <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
+        <div class="menu-btn" id="cheatMenuBtn">🔓 DEV (ЧИТ)</div>
     </div>
 
     <div id="gameInterface" class="game-interface hidden">
@@ -450,7 +451,7 @@
             </div>
             <div class="diamond-item">
                 <span class="diamond-icon">⏱️</span>
-                <span class="resource-value" id="timerDisplay">2:00</span>
+                <span class="resource-value" id="timerDisplay">10:00</span>
             </div>
         </div>
 
@@ -476,7 +477,7 @@
 
         <div class="risk-btn" id="riskBtn">🎲 РИСК (x2 или x0.5)</div>
 
-        <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (50 шт)</div>
+        <div class="upgrades-title">⚡ ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ (100 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
 
         <div class="action-buttons">
@@ -491,6 +492,7 @@
     </div>
 </div>
 
+<!-- Модальные окна -->
 <div class="modal-overlay" id="promoModal">
     <div class="modal-content">
         <div class="modal-title">🎫 ВВЕСТИ ПРОМОКОД</div>
@@ -516,6 +518,8 @@
     <div class="modal-content">
         <div class="modal-title">📢 ЧТО НОВОГО?</div>
         <div class="news-list">
+            <div class="news-item">✨ 100 нейросетей!</div>
+            <div class="news-item">🔓 DEV-режим с читом (пароль 8217)</div>
             <div class="news-item">✨ Добавлена система престижа</div>
             <div class="news-item">🎫 Вернулись промокоды</div>
             <div class="news-item">🏠 Добавлено главное меню</div>
@@ -561,10 +565,23 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="cheatModal">
+    <div class="modal-content">
+        <div class="modal-title">🔓 DEV-ДОСТУП</div>
+        <p style="color:white; margin-bottom:10px;">Введите пароль разработчика:</p>
+        <input type="password" class="modal-input" id="cheatInput" placeholder="****">
+        <div class="modal-buttons">
+            <button class="modal-btn" id="activateCheatBtn">АКТИВИРОВАТЬ</button>
+            <button class="modal-btn" id="closeCheatBtn">ЗАКРЫТЬ</button>
+        </div>
+        <div id="cheatMessage" style="color:#ffaa00; margin-top:10px;"></div>
+    </div>
+</div>
+
 <script>
     (function() {
         // ========== АВТОМАТИЧЕСКАЯ ПЕРЕЗАГРУЗКА ==========
-        const GAME_VERSION = "4.0.0"; // 👈 НОВАЯ ВЕРСИЯ!
+        const GAME_VERSION = "3.1.0";
         
         const savedVersion = localStorage.getItem('gameVersion');
         if (savedVersion !== GAME_VERSION) {
@@ -573,7 +590,7 @@
         }
         // =================================================
         
-        let points = 1000;
+        let points = 100;
         let clickPower = 1;
         let prestige = 0;
         let totalSpent = 0;
@@ -581,15 +598,17 @@
         let diamonds = 0;
         let currentSkin = "🧠";
         let currentBg = "cosmos";
-        let bonusTimer = 120;
+        let bonusTimer = 600;
         let bonusInterval = null;
         
         let prestigeBonus = 1;
         
         let skins = { neon: false, gold: false, rainbow: false };
         
+        // ========== 100 НЕЙРОСЕТЕЙ ==========
         const upgrades = [];
         const names = [
+            // Первые 50
             "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
             "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
             "🧠 Gemini", "👾 Нейро-интерфейс", "🤯 Claude 3", "🌌 Мультивселенная", "👁️ Midjourney",
@@ -599,25 +618,26 @@
             "💀 Некросеть", "🦾 Кибер-мозг", "👁️ Всевидящий", "🎭 Нейро-мимик", "⚛️ Квантовый разум",
             "📡 Сеть-шпион", "🛸 Пришелец", "🤖 Терминатор", "🧬 Эволюционист", "🌟 Звёздный",
             "🌙 Лунный", "☀️ Солнечный", "🪐 Планетарный", "🌌 Галактический", "♾️ Бесконечный",
-            "👑 Королевский", "🔮 Магический", "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный",)
-{ id: 50, name: "🌋 Вулканическая", power: 650, price: 300000, purchased: false },
-{ id: 51, name: "❄️ Ледяная", power: 800, price: 500000, purchased: false },
-{ id: 52, name: "⚡ Электрическая", power: 1000, price: 800000, purchased: false },
-{ id: 53, name: "🌪️ Ураган", power: 1300, price: 1200000, purchased: false },
-{ id: 54, name: "🪨 Каменная", power: 1700, price: 1800000, purchased: false },
-{ id: 55, name: "🔥 Огненная", power: 2200, price: 2500000, purchased: false },
-{ id: 56, name: "💧 Водная", power: 2800, price: 3500000, purchased: false },
-{ id: 57, name: "🌿 Природная", power: 3500, price: 5000000, purchased: false },
-{ id: 58, name: "✨ Святая", power: 4500, price: 7500000, purchased: false },
-{ id: 59, name: "🌀 Хаос", power: 6000, price: 10000000, purchased: false }
+            "👑 Королевский", "🔮 Магический", "⚡ Молниеносный", "🌀 Хаотичный", "✨ Божественный",
+            // Новые 50 (51-100)
+            "💀 Апокалипсис", "🧠 Нейро-титан", "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон",
+            "🌪️ Ураган", "🦾 Ассасин", "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция",
+            "🤖 Аватар", "🌀 Хаос", "💎 Алмазный", "👑 Император", "🌌 Звёздный странник",
+            "⚛️ Атомный", "🔮 Пророк", "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный",
+            "❄️ Морозный", "🌪️ Штормовой", "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд",
+            "⚡ Сверхновая", "🌍 Пандора", "🌀 Аномалия", "👾 Вторжение", "🔱 Посейдон",
+            "⚡ Зевс", "🔥 Прометей", "🌙 Артемида", "☀️ Ра", "🪐 Кронос",
+            "💎 Мадагаскар", "🧬 Клон", "🤖 Аватар", "🎭 Маска", "👑 Царь",
+            "🌌 Андромеда", "♾️ Вечность", "🔮 Пророчество", "⚛️ Коллайдер", "💀 Некромант",
+            "🦾 Хакер", "🧠 Гений", "⚡ Молния", "🔥 Вулкан", "❄️ Антарктида", "🌪️ Смерч"
         ];
         
-        for (let i = 0; i < 50; i++) {
-            const power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.4));
-            const price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.35, i));
+        for (let i = 0; i < 100; i++) {
+            const power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.35));
+            const price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.3, i));
             upgrades.push({
                 id: i,
-                name: names[i],
+                name: names[i] || `Нейросеть #${i+1}`,
                 power: power,
                 price: price,
                 purchased: false
@@ -782,7 +802,7 @@
             
             if (Math.random() < 0.01) {
                 diamonds++;
-                alert("💎 ВЫПАЛ АЛМАЗ! +10💎");
+                alert("💎 ВЫПАЛ АЛМАЗ! +1💎");
             }
             
             showClickEffect(clientX, clientY, gain);
@@ -884,6 +904,28 @@
             alert(`🌌 Фон изменён!`);
         }
         
+        // ========== ЧИТ-ФУНКЦИЯ ==========
+        function activateCheat() {
+            const password = document.getElementById('cheatInput').value;
+            if (password === "8217") {
+                points += 100000;
+                updateUI();
+                saveGame();
+                document.getElementById('cheatMessage').innerHTML = '✅ ЧИТ АКТИВИРОВАН! +100 000 очков!';
+                console.log("%c✅ Чит активирован, Дима! +100 000 очков", "color: #00ff00; font-size: 16px;");
+                setTimeout(() => {
+                    document.getElementById('cheatModal').classList.remove('show');
+                    document.getElementById('cheatInput').value = '';
+                    document.getElementById('cheatMessage').innerHTML = '';
+                }, 1500);
+            } else {
+                document.getElementById('cheatMessage').innerHTML = '❌ Неверный пароль!';
+                setTimeout(() => {
+                    document.getElementById('cheatMessage').innerHTML = '';
+                }, 2000);
+            }
+        }
+        
         function showGame() {
             document.getElementById('mainMenu').classList.add('hidden');
             document.getElementById('gameInterface').classList.remove('hidden');
@@ -901,6 +943,7 @@
         function showNewsModal() { document.getElementById('newsModal').classList.add('show'); }
         function showShopModal() { document.getElementById('shopModal').classList.add('show'); }
         function showBgModal() { document.getElementById('bgModal').classList.add('show'); }
+        function showCheatModal() { document.getElementById('cheatModal').classList.add('show'); }
         
         function closeModal(modalId) { document.getElementById(modalId).classList.remove('show'); }
         
@@ -912,6 +955,7 @@
             document.getElementById('promoMenuBtn').addEventListener('click', showPromoModal);
             document.getElementById('newsMenuBtn').addEventListener('click', showNewsModal);
             document.getElementById('prestigeMenuBtn').addEventListener('click', showPrestigeModal);
+            document.getElementById('cheatMenuBtn').addEventListener('click', showCheatModal);
             
             document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
             document.getElementById('promoGameBtn').addEventListener('click', showPromoModal);
@@ -937,6 +981,8 @@
             document.getElementById('closeShopBtn').addEventListener('click', () => closeModal('shopModal'));
             document.getElementById('closeBgBtn').addEventListener('click', () => closeModal('bgModal'));
             document.getElementById('doPrestigeBtn').addEventListener('click', doPrestige);
+            document.getElementById('activateCheatBtn').addEventListener('click', activateCheat);
+            document.getElementById('closeCheatBtn').addEventListener('click', () => closeModal('cheatModal'));
             
             document.querySelector('[data-skin="neon"]').addEventListener('click', () => buySkin('neon', 50, "🔥🧠"));
             document.querySelector('[data-skin="gold"]').addEventListener('click', () => buySkin('gold', 100, "💎🧠"));
@@ -946,7 +992,7 @@
                 btn.addEventListener('click', () => setBackground(btn.dataset.bg));
             });
             
-            const modals = ['promoModal', 'prestigeModal', 'newsModal', 'shopModal', 'bgModal'];
+            const modals = ['promoModal', 'prestigeModal', 'newsModal', 'shopModal', 'bgModal', 'cheatModal'];
             modals.forEach(id => {
                 document.getElementById(id).addEventListener('click', (e) => {
                     if (e.target === document.getElementById(id)) closeModal(id);
@@ -961,4 +1007,4 @@
     })();
 </script>
 </body>
-                                                                       </html>
+            </html>
