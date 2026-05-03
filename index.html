@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей 4.1.0 | Автофон по времени</title>
+    <title>🧠 Эволюция Нейросетей 5.0.0 | 1000 сетей + ПРАЙМ</title>
     <style>
         * {
             margin: 0;
@@ -13,19 +13,13 @@
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
 
-        /* Временные фоны */
-        body.bg-morning {
-            background: linear-gradient(145deg, #f5a623, #f7c56e);
+        body {
+            transition: background 0.5s ease;
         }
-        body.bg-day {
-            background: linear-gradient(145deg, #3a7bd5, #00d2ff);
-        }
-        body.bg-evening {
-            background: linear-gradient(145deg, #ff7e5f, #feb47b);
-        }
-        body.bg-night {
-            background: linear-gradient(145deg, #0f172a, #1e1b4b);
-        }
+        body.bg-morning { background: linear-gradient(145deg, #f5a623, #f7c56e); }
+        body.bg-day { background: linear-gradient(145deg, #3a7bd5, #00d2ff); }
+        body.bg-evening { background: linear-gradient(145deg, #ff7e5f, #feb47b); }
+        body.bg-night { background: linear-gradient(145deg, #0f172a, #1e1b4b); }
 
         .game-container {
             width: 100%;
@@ -35,15 +29,54 @@
             border-radius: 48px;
             border: 1px solid rgba(100, 180, 255, 0.3);
             padding: 20px 16px;
+            margin: 0 auto;
         }
 
-        .main-menu {
-            text-align: center;
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #0b1729, #1b2f47);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            transition: opacity 0.5s;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #2a4b6e;
+            border-top: 6px solid #ffaa00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #ffd966;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .loading-sub {
+            color: #88aaff;
+            font-size: 12px;
+            margin-top: 10px;
         }
 
-        .main-menu.hidden, .game-interface.hidden {
-            display: none;
-        }
+        .main-menu { text-align: center; }
+        .main-menu.hidden, .game-interface.hidden { display: none; }
 
         .game-title {
             color: #ffd966;
@@ -52,13 +85,11 @@
             margin-bottom: 5px;
             text-shadow: 0 0 20px #ffaa00;
         }
-
         .game-version {
             color: #88aaff;
             font-size: 12px;
             margin-bottom: 25px;
         }
-
         .menu-btn {
             background: linear-gradient(145deg, #2a4b6e, #1a3150);
             border: 2px solid #7aa5d9;
@@ -69,7 +100,9 @@
             font-weight: 700;
             margin: 8px 0;
             cursor: pointer;
+            transition: transform 0.05s;
         }
+        .menu-btn:active { transform: scale(0.97); }
 
         .top-bar, .diamond-bar, .stats-panel {
             background: rgba(0, 10, 20, 0.7);
@@ -81,37 +114,13 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-
-        .resource-item, .diamond-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .resource-value {
-            font-size: 18px;
-            font-weight: 800;
-            color: #ffd966;
-        }
-
-        .stats-panel {
-            background: #0a1b2e;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            color: #ffd966;
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .stat-label {
-            color: #aac8f0;
-            font-size: 9px;
-        }
+        .resource-item, .diamond-item { display: flex; align-items: center; gap: 5px; }
+        .resource-value { font-size: 18px; font-weight: 800; color: #ffd966; }
+        .diamond-value, .timer-value { font-size: 18px; font-weight: 800; color: white; }
+        .stats-panel { background: #0a1b2e; }
+        .stat-item { text-align: center; }
+        .stat-value { color: #ffd966; font-size: 14px; font-weight: 800; }
+        .stat-label { color: #aac8f0; font-size: 9px; }
 
         .brain-container {
             display: flex;
@@ -119,7 +128,6 @@
             margin: 20px 0;
             position: relative;
         }
-
         .brain {
             width: 160px;
             height: 160px;
@@ -135,12 +143,10 @@
             border: 3px solid #ffffaa;
             animation: float 3s infinite;
         }
-
         @keyframes float {
             0%,100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
         }
-
         .brain:active {
             transform: translateY(6px);
             box-shadow: 0 6px 0 #aa4400;
@@ -156,7 +162,6 @@
             animation: floatUp 1s forwards;
             z-index: 100;
         }
-
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0px); }
             100% { opacity: 0; transform: translateY(-40px); }
@@ -359,36 +364,40 @@
 </head>
 <body>
 
+<div id="loadingScreen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">ЗАГРУЗКА...</div>
+    <div class="loading-sub">Эволюция нейросетей 5.0.0</div>
+</div>
+
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v4.1.0</div>
+        <div class="game-version" id="menuVersion">v5.0.0</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
-        <div class="menu-btn" id="dailyPromoBtn">🎲 ПРОМО ДНЯ</div>
         <div class="menu-btn" id="achievementsBtn">🏆 ДОСТИЖЕНИЯ</div>
         <div class="menu-btn" id="newsMenuBtn">📢 НОВОСТИ</div>
-        <div class="menu-btn" id="prestigeMenuBtn">🔄 ПРЕСТИЖ</div>
-        <div class="menu-btn" id="cheatMenuBtn">🔓 DEV</div>
+        <div class="menu-btn" id="primeMenuBtn">👑 ПРАЙМ</div>
     </div>
 
     <div id="gameInterface" class="game-interface hidden">
         <div class="top-bar">
-            <div class="resource-item"><span class="resource-icon">🧠</span><span class="resource-value" id="points">100</span></div>
-            <div class="resource-item"><span class="resource-icon">⚡</span><span class="resource-value" id="power">1</span></div>
-            <div class="resource-item"><span class="resource-icon">👑</span><span class="resource-value" id="prestigeLevel">0</span></div>
+            <div class="resource-item"><span>🧠</span><span class="resource-value" id="points">100</span></div>
+            <div class="resource-item"><span>⚡</span><span class="resource-value" id="power">1</span></div>
+            <div class="resource-item"><span>👑</span><span class="resource-value" id="primeLevel">0</span></div>
         </div>
 
         <div class="diamond-bar">
-            <div class="diamond-item">💎 <span id="diamonds">0</span></div>
-            <div class="diamond-item">⏱️ <span id="timerDisplay">10:00</span></div>
+            <div class="diamond-item">💎 <span class="diamond-value" id="diamonds">0</span></div>
+            <div class="diamond-item">⏱️ <span class="timer-value" id="timerDisplay">10:00</span></div>
         </div>
 
         <div class="stats-panel">
             <div class="stat-item"><div class="stat-value" id="netCount">0</div><div class="stat-label">Сетей</div></div>
             <div class="stat-item"><div class="stat-value" id="totalSpent">0</div><div class="stat-label">Потрачено</div></div>
-            <div class="stat-item"><div class="stat-value" id="prestigeBonus">0%</div><div class="stat-label">Бонус</div></div>
+            <div class="stat-item"><div class="stat-value" id="primeBonus">0%</div><div class="stat-label">Бонус</div></div>
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
 
@@ -405,7 +414,7 @@
             </div>
         </div>
 
-        <div class="upgrades-title">⚡ НЕЙРОСЕТИ (500 шт)</div>
+        <div class="upgrades-title">⚡ НЕЙРОСЕТИ (1000 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
 
         <div class="action-buttons">
@@ -420,63 +429,58 @@
 
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
-<div class="modal-overlay" id="dailyPromoModal"><div class="modal-content"><div class="modal-title">🎲 ПРОМОКОД ДНЯ</div><div id="dailyPromoCode" style="color:#ffaa00;font-size:24px;"></div><div id="dailyPromoReward"></div><button id="closeDailyPromoBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="prestigeModal"><div class="modal-content"><div class="modal-title">🔄 ПРЕСТИЖ</div><div id="prestigeInfo"></div><button id="doPrestigeBtn" class="modal-btn">СОВЕРШИТЬ</button><button id="closePrestigeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 500 нейросетей<br>💬 Фейковый чат<br>📸 Фото прогресса<br>🎨 Автофон по времени суток</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 1000 нейросетей<br>💬 Новые фразы ботов<br>👑 ПРАЙМ вместо престижа (+5%)<br>📸 Фото прогресса<br>🎨 Автофон по времени</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo" style="color:white;margin:15px"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="cheatModal"><div class="modal-content"><div class="modal-title">🔓 DEV</div><input id="cheatInput" class="modal-input" type="password"><button id="activateCheatBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closeCheatBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="cheatMessage"></div></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "4.1.0";
+    const GAME_VERSION = "5.0.0";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
-    // Функция автоматической смены фона по времени суток
+    // Автофон по времени
     function updateBackgroundByTime() {
         const hours = new Date().getHours();
         let bgClass = '';
-        
-        if (hours >= 6 && hours < 12) {
-            bgClass = 'bg-morning';
-        } else if (hours >= 12 && hours < 18) {
-            bgClass = 'bg-day';
-        } else if (hours >= 18 && hours < 22) {
-            bgClass = 'bg-evening';
-        } else {
-            bgClass = 'bg-night';
-        }
-        
+        if (hours >= 6 && hours < 12) bgClass = 'bg-morning';
+        else if (hours >= 12 && hours < 18) bgClass = 'bg-day';
+        else if (hours >= 18 && hours < 22) bgClass = 'bg-evening';
+        else bgClass = 'bg-night';
         document.body.classList.remove('bg-morning', 'bg-day', 'bg-evening', 'bg-night');
         document.body.classList.add(bgClass);
-        console.log(`🌞 Автофон: ${bgClass} (${hours}:00)`);
     }
-
-    // Смена фона каждую минуту (на случай, если время перевалило)
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
 
-    // Очистка старых сохранений из-за удаления ночного режима
+    // Проверка версии и сброс устаревших данных
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         localStorage.removeItem('neuralEvoSave');
         localStorage.removeItem('chatMessages');
-        localStorage.removeItem('riskWins');
     }
 
     // Переменные
-    let points = 100, prestige = 0, totalSpent = 0, purchasedCount = 0, diamonds = 0;
-    let currentSkin = "🧠", bonusTimer = 600, bonusInterval = null;
-    let prestigeBonus = 1, totalClicks = 0, skins = { neon: false, gold: false, rainbow: false };
+    let points = 100;
+    let prime = 0;          // прайм-уровни
+    let totalSpent = 0;
+    let purchasedCount = 0;
+    let diamonds = 0;
+    let currentSkin = "🧠";
+    let bonusTimer = 600;
+    let bonusInterval = null;
+    let primeBonus = 1;     // 1 + prime * 0.05
+    let totalClicks = 0;
+    let skins = { neon: false, gold: false, rainbow: false };
     let soundEnabled = false;
 
-    // 500 НЕЙРОСЕТЕЙ
+    // 1000 НЕЙРОСЕТЕЙ
     let upgrades = [];
-    for(let i = 0; i < 500; i++){
-        let power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.25));
-        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.25, i));
+    for(let i = 0; i < 1000; i++){
+        let power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.2));
+        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.22, i));
         let name = `🧠 Нейросеть #${i+1}`;
-        if(i < 80){
+        if(i < 100){
             const coolNames = [
                 "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
                 "🎯 Квантовая", "🧪 GPT-клик", "🧿 Автокодировщик", "🚀 DALL-E", "🤖 Глубокий мозг",
@@ -492,7 +496,8 @@
                 "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция", "🤖 Аватар", "🌀 Хаос",
                 "💎 Алмазный", "👑 Император", "🌌 Звёздный странник", "⚛️ Атомный", "🔮 Пророк",
                 "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный", "❄️ Морозный", "🌪️ Штормовой",
-                "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд", "⚡ Сверхновая", "🌍 Пандора"
+                "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд", "⚡ Сверхновая", "🌍 Пандора",
+                "🧠 Нейро-Дракон", "⚡ Молния", "🔥 Вулкан", "❄️ Айсберг", "🌪️ Торнадо"
             ];
             if(i < coolNames.length) name = coolNames[i];
         }
@@ -507,32 +512,67 @@
         upgrades50:{name:"50 сетей",completed:false,progress:0,target:50,reward:50},
         upgrades100:{name:"100 сетей",completed:false,progress:0,target:100,reward:100},
         upgrades250:{name:"250 сетей",completed:false,progress:0,target:250,reward:250},
-        upgrades500:{name:"ВСЕ 500 СЕТЕЙ!",completed:false,progress:0,target:500,reward:1000},
-        prestige1:{name:"Престиж 1",completed:false,progress:0,target:1,reward:50},
-        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10}
+        upgrades500:{name:"500 сетей",completed:false,progress:0,target:500,reward:500},
+        upgrades1000:{name:"ВСЕ 1000 СЕТЕЙ!",completed:false,progress:0,target:1000,reward:2000},
+        prime1:{name:"Прайм 1",completed:false,progress:0,target:1,reward:50},
+        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10},
+        diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50}
     };
 
-    const promoCodes = { 'dima':{points:500,diamonds:10}, 'dima god':{points:5000,diamonds:100}, 'start':{points:100,diamonds:5}, '500nets':{points:50000,diamonds:500} };
+    const promoCodes = { 
+        'dima':{points:500,diamonds:10}, 
+        'dima god':{points:5000,diamonds:100}, 
+        'start':{points:100,diamonds:5}, 
+        '1000nets':{points:100000,diamonds:1000} 
+    };
 
-    // Чат
+    // ЧАТ С 40+ ФРАЗАМИ
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-    const botPhrases = ["🔴 Анон: Кто тут самый кликабельный?", "🤖 Бот: Престиж 10 — база", "💎 Бот: У кого алмазы есть?", "👑 Бот: Дима лучший!"];
+    const botPhrases = [
+        "🔴 Анон: Кто тут самый кликабельный?", "🤖 Бот: Прайм это сила!", 
+        "💎 Бот: У кого алмазы есть?", "👑 Бот: Дима лучший создатель!",
+        "🔥 Чат: 1000 нейросетей имба!", "🧠 Гений: Купил 500 сетей!",
+        "⚡ Спидран: 10000 кликов за час!", "💀 Нуб: Как сделать прайм?",
+        "🎉 Победитель: Выиграл 5000 очков!", "😭 Неудачник: Всё проиграл...",
+        "🤖 Бот: Прайм даёт +5% к силе", "👑 Король: У меня 10 праймов!",
+        "🔥 Чат: Автофон прикольная тема", "💎 Алмазный магнат: 500 алмазов!",
+        "🧠 Бот: Нейросети рулят", "⚡ Бот: Кликай быстрее!",
+        "🎮 Геймер: Игра топ", "📱 Мобила: Тоже норм работает",
+        "🌙 Ночной волк: Фон вечером красивый", "☀️ Дневной: Утром тоже норм",
+        "🤖 Бот: 1000 нейросетей дохуя", "💎 Бот: Алмазы падают с шансом 1%",
+        "👑 Бот: Прайм доступен с 10000 очков", "🔥 Бот: Чем больше сетей, тем сильнее клик",
+        "😎 Крутой: У меня 50 праймов", "🤓 Задрот: 24 часа в игре",
+        "🎯 Снайпер: Точные клики", "🚀 Космос: Фон космос топ",
+        "🏆 Чемпион: Все достижения собрал", "💀 Легенда: Прошёл игру 100 раз",
+        "🤖 Бот: Скины можно купить за алмазы", "🛒 Шопоголик: Все скины купил",
+        "📸 Фотограф: Сохранил прогресс в фото", "💬 Чатила: /stats полезная команда",
+        "🎨 Художник: Фоны красивые", "⚡ Энерджайзер: Кликаю без остановки",
+        "🧠 Умник: Сила клика растёт экспоненциально", "👑 Властелин: Прайм-бонус накапливается",
+        "🔥 Огонь: Комбо не нужен, главное клики", "💎 Бот: Копи алмазы на скины"
+    ];
 
     function renderChat(){
         let html = '';
-        chatMessages.slice(-25).forEach(m => html += `<div class="chat-message"><span class="user">${m.user}:</span> ${m.text} <span style="color:#888">${m.time}</span></div>`);
+        chatMessages.slice(-30).forEach(m => html += `<div class="chat-message"><span class="user">${m.user}:</span> ${m.text} <span style="color:#888">${m.time}</span></div>`);
         document.getElementById('chatMessages').innerHTML = html;
+        const container = document.querySelector('.chat-container');
+        if(container) container.scrollTop = container.scrollHeight;
     }
+
     function sendChatMessage(){
         let input = document.getElementById('chatInput');
         let text = input.value.trim();
         if(!text) return;
-        if(text.startsWith('/stats')) text = `⭐ Очки: ${Math.floor(points)} | Престиж: ${prestige} | Сетей: ${purchasedCount}/500 | Алмазов: ${diamonds}`;
+        if(text.startsWith('/stats')){
+            text = `⭐ Очки: ${Math.floor(points)} | Прайм: ${prime} (+${Math.floor((primeBonus-1)*100)}%) | Сетей: ${purchasedCount}/1000 | Алмазов: ${diamonds}`;
+        }
         chatMessages.push({ user: "Вы", text: text, time: new Date().toLocaleTimeString() });
+        if(chatMessages.length > 100) chatMessages = chatMessages.slice(-80);
         localStorage.setItem('chatMessages', JSON.stringify(chatMessages));
         renderChat();
         input.value = '';
     }
+
     function addBotMessage(){
         let randomPhrase = botPhrases[Math.floor(Math.random() * botPhrases.length)];
         chatMessages.push({ user: "🤖 Бот", text: randomPhrase, time: new Date().toLocaleTimeString() });
@@ -559,14 +599,14 @@
         ctx.fillStyle = '#ffaa00';
         ctx.font = 'bold 18px monospace';
         ctx.fillText(`ОЧКИ: ${Math.floor(points).toLocaleString()}`, 50, 160);
-        ctx.fillText(`ПРЕСТИЖ: ${prestige} (+${Math.floor((prestigeBonus-1)*100)}%)`, 50, 200);
-        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/500`, 50, 240);
+        ctx.fillText(`ПРАЙМ: ${prime} (+${Math.floor((primeBonus-1)*100)}%)`, 50, 200);
+        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/1000`, 50, 240);
         ctx.fillText(`ПОТРАЧЕНО: ${totalSpent.toLocaleString()}`, 50, 280);
         ctx.fillText(`АЛМАЗОВ: ${diamonds}💎`, 50, 320);
         ctx.fillText(`КЛИКОВ: ${totalClicks.toLocaleString()}`, 50, 360);
         ctx.fillStyle = '#88aaff';
         ctx.font = '12px monospace';
-        ctx.fillText(`Версия ${GAME_VERSION}`, 150, 520);
+        ctx.fillText(`Версия ${GAME_VERSION} | Создано Дима и ИИ`, 70, 520);
         const link = document.createElement('a');
         link.download = `neural_${Date.now()}.png`;
         link.href = canvas.toDataURL();
@@ -583,21 +623,24 @@
 
     function updateAchievements(){
         let changed=false;
-        achievements.clicks100.progress=totalClicks;
-        achievements.clicks1000.progress=totalClicks;
-        achievements.upgrades10.progress=purchasedCount;
-        achievements.upgrades50.progress=purchasedCount;
-        achievements.upgrades100.progress=purchasedCount;
-        achievements.upgrades250.progress=purchasedCount;
-        achievements.upgrades500.progress=purchasedCount;
-        achievements.prestige1.progress=prestige;
-        achievements.diamonds50.progress=diamonds;
+        achievements.clicks100.progress = totalClicks;
+        achievements.clicks1000.progress = totalClicks;
+        achievements.upgrades10.progress = purchasedCount;
+        achievements.upgrades50.progress = purchasedCount;
+        achievements.upgrades100.progress = purchasedCount;
+        achievements.upgrades250.progress = purchasedCount;
+        achievements.upgrades500.progress = purchasedCount;
+        achievements.upgrades1000.progress = purchasedCount;
+        achievements.prime1.progress = prime;
+        achievements.diamonds50.progress = diamonds;
+        achievements.diamonds200.progress = diamonds;
+        
         for(let key in achievements){
-            let a=achievements[key];
-            if(!a.completed && a.progress>=a.target){
-                a.completed=true;
-                diamonds+=a.reward;
-                changed=true;
+            let a = achievements[key];
+            if(!a.completed && a.progress >= a.target){
+                a.completed = true;
+                diamonds += a.reward;
+                changed = true;
                 showToast(`🏆 ${a.name} +${a.reward}💎`);
             }
         }
@@ -605,16 +648,16 @@
     }
 
     function getClickPower(){
-        let base=1;
-        upgrades.forEach(u=>{ if(u.purchased) base+=u.power; });
-        return Math.floor(base * prestigeBonus);
+        let base = 1;
+        upgrades.forEach(u => { if(u.purchased) base += u.power; });
+        return Math.floor(base * primeBonus);
     }
 
     function doClick(){
         let gain = getClickPower();
         points += gain;
         totalClicks++;
-        if(Math.random() < 0.01){ diamonds++; showToast("💎 +1 алмаз!"); }
+        if(Math.random() < 0.01){ diamonds++; showToast("💎 +1 алмаз!"); updateAchievements(); }
         updateUI();
         saveGame();
         updateAchievements();
@@ -626,41 +669,48 @@
         doClick();
         let brain = document.getElementById('brain');
         brain.style.transform = 'translateY(6px)';
-        setTimeout(()=>brain.style.transform = '', 100);
+        setTimeout(() => brain.style.transform = '', 100);
         let rect = brain.getBoundingClientRect();
-        let x = e.clientX || rect.left+80;
-        let y = e.clientY || rect.top+80;
-        let ef = document.createElement('div'); ef.className='click-effect'; ef.innerText=`+${getClickPower()}`;
-        ef.style.left = x+'px'; ef.style.top = y+'px';
+        let x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left+80);
+        let y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top+80);
+        let ef = document.createElement('div'); ef.className='click-effect'; ef.innerText = `+${getClickPower()}`;
+        ef.style.left = x + 'px'; ef.style.top = y + 'px';
         document.body.appendChild(ef);
-        setTimeout(()=>ef.remove(),800);
+        setTimeout(() => ef.remove(), 800);
     }
 
     function updateUI(){
         document.getElementById('points').innerText = Math.floor(points);
         document.getElementById('power').innerText = getClickPower();
-        document.getElementById('prestigeLevel').innerText = prestige;
+        document.getElementById('primeLevel').innerText = prime;
         document.getElementById('clickHint').innerHTML = `+${getClickPower()}`;
         document.getElementById('netCount').innerText = purchasedCount;
         document.getElementById('totalSpent').innerText = totalSpent;
-        document.getElementById('prestigeBonus').innerText = Math.floor((prestigeBonus-1)*100)+'%';
+        document.getElementById('primeBonus').innerText = Math.floor((primeBonus-1)*100) + '%';
         document.getElementById('diamonds').innerText = diamonds;
         document.getElementById('totalClicks').innerText = totalClicks;
     }
 
     function renderUpgrades(){
         let html = '';
-        for(let i = 0; i < upgrades.length; i++){
+        let displayCount = Math.min(upgrades.length, 150);
+        for(let i = 0; i < displayCount; i++){
             let up = upgrades[i];
             let disabled = (!up.purchased && points >= up.price) ? '' : 'purchased';
             html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased ? '✅' : `💰 ${up.price}`}</span></div>`;
         }
         document.getElementById('upgradesContainer').innerHTML = html;
+        if(upgrades.length > 150){
+            let more = document.createElement('div');
+            more.className = 'upgrade-card purchased';
+            more.innerHTML = `<span class="upgrade-name">... и ещё ${upgrades.length-150} нейросетей (листай вверх)</span>`;
+            document.getElementById('upgradesContainer').appendChild(more);
+        }
     }
 
     function buyUpgrade(id){
-        let up = upgrades.find(u=>u.id===id);
-        if(!up || up.purchased || points<up.price) return;
+        let up = upgrades.find(u => u.id === id);
+        if(!up || up.purchased || points < up.price) return;
         points -= up.price;
         totalSpent += up.price;
         up.purchased = true;
@@ -671,71 +721,111 @@
         updateAchievements();
     }
 
-    function doPrestige(){
-        if(points<10000){ showToast(`❌ Нужно 10000 очков`); return; }
-        if(confirm("Престиж? +10% бонус навсегда")){
-            prestige++;
+    // ПРАЙМ (вместо престижа)
+    function doPrime(){
+        if(points < 10000){
+            showToast(`❌ Нужно 10000 очков для ПРАЙМА! У вас ${Math.floor(points)}`);
+            return;
+        }
+        if(confirm(`👑 СОВЕРШИТЬ ПРАЙМ?\nВы получите +5% бонус навсегда!\nОчки и нейросети сбросятся.\nТекущий бонус: +${Math.floor((primeBonus-1)*100)}%`)){
+            prime++;
             points = 100;
             totalSpent = 0;
             purchasedCount = 0;
-            upgrades.forEach(u=>u.purchased=false);
-            prestigeBonus = 1 + prestige*0.1;
+            upgrades.forEach(u => u.purchased = false);
+            primeBonus = 1 + (prime * 0.05);
             updateUI();
             renderUpgrades();
             saveGame();
-            showToast(`✨ Престиж ${prestige}! +${prestige*10}%`);
+            showToast(`✨ ПРАЙМ ${prime}! Бонус +${Math.floor((primeBonus-1)*100)}% к силе клика!`);
             updateAchievements();
+            document.getElementById('primeModal').classList.remove('show');
         }
     }
 
     function saveGame(){
-        let save = { points, prestige, totalSpent, purchasedCount, diamonds, currentSkin, totalClicks, soundEnabled, upgrades: upgrades.map(u=>u.purchased), achievements, chatMessages };
-        localStorage.setItem('neuralEvoSave', JSON.stringify(save));
+        let saveData = {
+            points, prime, totalSpent, purchasedCount, diamonds, currentSkin,
+            totalClicks, soundEnabled, primeBonus,
+            upgrades: upgrades.map(u => u.purchased),
+            achievements: achievements,
+            chatMessages: chatMessages
+        };
+        localStorage.setItem('neuralEvoSave', JSON.stringify(saveData));
         document.getElementById('saveBadge').innerText = '💾 сохранено!';
-        setTimeout(()=>document.getElementById('saveBadge').innerText = '💾 автосохранение', 1500);
+        setTimeout(() => {
+            if(document.getElementById('saveBadge')) 
+                document.getElementById('saveBadge').innerText = '💾 автосохранение';
+        }, 1500);
     }
 
     function loadGame(){
         let saved = localStorage.getItem('neuralEvoSave');
         if(saved){
-            let data = JSON.parse(saved);
-            points = data.points||100; prestige = data.prestige||0; totalSpent = data.totalSpent||0;
-            purchasedCount = data.purchasedCount||0; diamonds = data.diamonds||0; currentSkin = data.currentSkin||"🧠";
-            totalClicks = data.totalClicks||0; soundEnabled = data.soundEnabled||false;
-            chatMessages = data.chatMessages||[];
-            if(data.upgrades) data.upgrades.forEach((p,i)=>{ if(upgrades[i]) upgrades[i].purchased = p; });
-            if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
+            try {
+                let data = JSON.parse(saved);
+                points = data.points ?? 100;
+                prime = data.prime ?? 0;
+                totalSpent = data.totalSpent ?? 0;
+                purchasedCount = data.purchasedCount ?? 0;
+                diamonds = data.diamonds ?? 0;
+                currentSkin = data.currentSkin ?? "🧠";
+                totalClicks = data.totalClicks ?? 0;
+                soundEnabled = data.soundEnabled ?? false;
+                chatMessages = data.chatMessages ?? [];
+                if(data.upgrades) {
+                    data.upgrades.forEach((p, i) => {
+                        if(upgrades[i]) upgrades[i].purchased = p;
+                    });
+                }
+                if(data.achievements) {
+                    for(let k in data.achievements) {
+                        if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
+                    }
+                }
+            } catch(e) { console.log("Ошибка загрузки", e); }
         }
-        prestigeBonus = 1 + prestige*0.1;
+        primeBonus = 1 + (prime * 0.05);
         document.getElementById('brain').innerText = currentSkin;
         document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
         updateUI();
         renderUpgrades();
         renderChat();
+        updateAchievements();
     }
 
-    function buySkin(name,price,emoji){
-        if(diamonds>=price){ diamonds-=price; skins[name]=true; currentSkin=emoji; document.getElementById('brain').innerText=currentSkin; updateUI(); saveGame(); showToast(`✅ Скин ${emoji} куплен!`); }
-        else showToast(`❌ Нужно ${price}💎`);
-    }
-
-    function activateCheat(){
-        if(document.getElementById('cheatInput').value === "8217"){
-            points += 100000; diamonds += 100; updateUI(); saveGame(); showToast("Чит активирован!");
-            document.getElementById('cheatModal').classList.remove('show');
-        } else { document.getElementById('cheatMessage').innerHTML='❌ Неверный пароль!'; setTimeout(()=>document.getElementById('cheatMessage').innerHTML='',2000); }
+    function buySkin(name, price, emoji){
+        if(diamonds >= price){
+            diamonds -= price;
+            skins[name] = true;
+            currentSkin = emoji;
+            document.getElementById('brain').innerText = currentSkin;
+            updateUI();
+            saveGame();
+            showToast(`✅ Скин ${emoji} куплен!`);
+        } else {
+            showToast(`❌ Нужно ${price}💎`);
+        }
     }
 
     function startBonusTimer(){
         if(bonusInterval) clearInterval(bonusInterval);
-        bonusInterval = setInterval(()=>{
-            if(bonusTimer>0){
+        bonusInterval = setInterval(() => {
+            if(bonusTimer > 0){
                 bonusTimer--;
-                let m = Math.floor(bonusTimer/60), s = bonusTimer%60;
-                document.getElementById('timerDisplay').innerText = `${m}:${s.toString().padStart(2,'0')}`;
-                if(bonusTimer === 0){ diamonds+=50; updateUI(); saveGame(); showToast("⏱️ +50 алмазов!"); bonusTimer=600; }
+                let mins = Math.floor(bonusTimer / 60);
+                let secs = bonusTimer % 60;
+                document.getElementById('timerDisplay').innerText = `${mins}:${secs.toString().padStart(2,'0')}`;
+                if(bonusTimer === 0){
+                    diamonds += 50;
+                    updateUI();
+                    saveGame();
+                    showToast("⏱️ БОНУС! +50 алмазов!");
+                    bonusTimer = 600;
+                    updateAchievements();
+                }
             }
-        },1000);
+        }, 1000);
     }
 
     function showGame(){
@@ -743,54 +833,102 @@
         document.getElementById('gameInterface').classList.remove('hidden');
         startBonusTimer();
     }
+
     function showMainMenu(){
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('gameInterface').classList.add('hidden');
         if(bonusInterval) clearInterval(bonusInterval);
     }
-    function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+    function showPrimeModal(){
+        document.getElementById('primeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для ПРАЙМА<br>Текущий прайм: ${prime}<br>Следующий бонус: +5% к силе клика`;
+        document.getElementById('primeModal').classList.add('show');
+    }
+
     function showAchievements(){
         let html = '';
         for(let k in achievements){
             let a = achievements[k];
-            html += `<div style="padding:5px;background:#1a3150;margin:5px;border-radius:20px;"><b>${a.name}</b> ${a.progress}/${a.target} ${a.completed ? '✅ +'+a.reward+'💎' : '🔒'}</div>`;
+            html += `<div style="padding:8px;background:#1a3150;margin:8px;border-radius:20px;text-align:left;">
+                        <b style="color:#ffd966">${a.name}</b><br>
+                        <span style="color:#aac8f0">${a.progress}/${a.target}</span>
+                        <span style="float:right">${a.completed ? '✅ +'+a.reward+'💎' : '🔒'}</span>
+                    </div>`;
         }
         document.getElementById('achievementsList').innerHTML = html;
         document.getElementById('achievementsModal').classList.add('show');
     }
 
+    function closeModal(id){ 
+        document.getElementById(id).classList.remove('show'); 
+    }
+
+    function showLoadingAndStart() {
+        const loadingScreen = document.getElementById('loadingScreen');
+        setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+        }, 2000);
+    }
+
     function init(){
         loadGame();
         setInterval(addBotMessage, 18000);
-        
+        showLoadingAndStart();
+
         document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
-        document.getElementById('chatInput').addEventListener('keypress', e=>{ if(e.key==='Enter') sendChatMessage(); });
+        document.getElementById('chatInput').addEventListener('keypress', e => { if(e.key === 'Enter') sendChatMessage(); });
         document.getElementById('playBtn').addEventListener('click', showGame);
         document.getElementById('photoSaveBtn').addEventListener('click', saveToPhoto);
         document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
         document.getElementById('brain').addEventListener('click', handleBrainClick);
         document.getElementById('brain').addEventListener('touchstart', handleBrainClick);
-        document.getElementById('upgradesContainer').addEventListener('click', e=>{ let card=e.target.closest('.upgrade-card'); if(card && !card.classList.contains('purchased')) buyUpgrade(parseInt(card.dataset.id)); });
-        document.getElementById('soundBtn').addEventListener('click',()=>{ soundEnabled=!soundEnabled; document.getElementById('soundBtn').innerHTML=soundEnabled?"🔊 ЗВУК ВКЛ":"🔇 ЗВУК ВЫКЛ"; saveGame(); });
-        document.getElementById('promoMenuBtn').addEventListener('click',()=>document.getElementById('promoModal').classList.add('show'));
-        document.getElementById('dailyPromoBtn').addEventListener('click',()=>{ document.getElementById('dailyPromoCode').innerHTML="dima5000"; document.getElementById('dailyPromoReward').innerHTML="5000 очков, 50💎"; document.getElementById('dailyPromoModal').classList.add('show'); });
+        document.getElementById('upgradesContainer').addEventListener('click', e => {
+            let card = e.target.closest('.upgrade-card');
+            if(card && !card.classList.contains('purchased')) buyUpgrade(parseInt(card.dataset.id));
+        });
+        document.getElementById('soundBtn').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
+            saveGame();
+        });
+        document.getElementById('promoMenuBtn').addEventListener('click', () => document.getElementById('promoModal').classList.add('show'));
         document.getElementById('achievementsBtn').addEventListener('click', showAchievements);
-        document.getElementById('newsMenuBtn').addEventListener('click',()=>document.getElementById('newsModal').classList.add('show'));
-        document.getElementById('prestigeMenuBtn').addEventListener('click',()=>{ document.getElementById('prestigeInfo').innerHTML=`У вас ${Math.floor(points)} очков<br>Нужно 10000`; document.getElementById('prestigeModal').classList.add('show'); });
-        document.getElementById('cheatMenuBtn').addEventListener('click',()=>document.getElementById('cheatModal').classList.add('show'));
-        document.getElementById('shopBtn').addEventListener('click',()=>document.getElementById('shopModal').classList.add('show'));
-        document.getElementById('activatePromoBtn').addEventListener('click',()=>{ let code=document.getElementById('promoInput').value.toLowerCase(); if(promoCodes[code]){ points+=promoCodes[code].points; diamonds+=promoCodes[code].diamonds; updateUI(); saveGame(); document.getElementById('promoMessage').innerHTML='✅ Активирован!'; } else document.getElementById('promoMessage').innerHTML='❌ Неверный код'; });
-        document.getElementById('closePromoBtn').addEventListener('click',()=>closeModal('promoModal'));
-        document.getElementById('closeDailyPromoBtn').addEventListener('click',()=>closeModal('dailyPromoModal'));
-        document.getElementById('closeAchievementsBtn').addEventListener('click',()=>closeModal('achievementsModal'));
-        document.getElementById('closePrestigeBtn').addEventListener('click',()=>closeModal('prestigeModal'));
-        document.getElementById('closeNewsBtn').addEventListener('click',()=>closeModal('newsModal'));
-        document.getElementById('closeShopBtn').addEventListener('click',()=>closeModal('shopModal'));
-        document.getElementById('doPrestigeBtn').addEventListener('click',doPrestige);
-        document.getElementById('activateCheatBtn').addEventListener('click',activateCheat);
-        document.getElementById('closeCheatBtn').addEventListener('click',()=>closeModal('cheatModal'));
-        document.querySelectorAll('[data-skin]').forEach(el=>{ let s=el.dataset.skin; if(s==='neon') el.addEventListener('click',()=>buySkin('neon',50,"🔥🧠")); if(s==='gold') el.addEventListener('click',()=>buySkin('gold',100,"💎🧠")); if(s==='rainbow') el.addEventListener('click',()=>buySkin('rainbow',200,"🌈🧠")); });
-        setInterval(saveGame, 15000);
+        document.getElementById('newsMenuBtn').addEventListener('click', () => document.getElementById('newsModal').classList.add('show'));
+        document.getElementById('primeMenuBtn').addEventListener('click', showPrimeModal);
+        document.getElementById('shopBtn').addEventListener('click', () => document.getElementById('shopModal').classList.add('show'));
+        
+        document.getElementById('activatePromoBtn').addEventListener('click', () => {
+            let code = document.getElementById('promoInput').value.toLowerCase().trim();
+            if(promoCodes[code]){
+                points += promoCodes[code].points;
+                diamonds += promoCodes[code].diamonds;
+                updateUI();
+                saveGame();
+                updateAchievements();
+                document.getElementById('promoMessage').innerHTML = '✅ Активирован!';
+            } else {
+                document.getElementById('promoMessage').innerHTML = '❌ Неверный код!';
+            }
+            setTimeout(() => document.getElementById('promoMessage').innerHTML = '', 2000);
+            document.getElementById('promoInput').value = '';
+        });
+        document.getElementById('closePromoBtn').addEventListener('click', () => closeModal('promoModal'));
+        document.getElementById('closeAchievementsBtn').addEventListener('click', () => closeModal('achievementsModal'));
+        document.getElementById('closeNewsBtn').addEventListener('click', () => closeModal('newsModal'));
+        document.getElementById('closePrimeBtn').addEventListener('click', () => closeModal('primeModal'));
+        document.getElementById('closeShopBtn').addEventListener('click', () => closeModal('shopModal'));
+        document.getElementById('doPrimeBtn').addEventListener('click', doPrime);
+        
+        document.querySelectorAll('[data-skin]').forEach(el => {
+            let s = el.dataset.skin;
+            if(s === 'neon') el.addEventListener('click', () => buySkin('neon', 50, "🔥🧠"));
+            if(s === 'gold') el.addEventListener('click', () => buySkin('gold', 100, "💎🧠"));
+            if(s === 'rainbow') el.addEventListener('click', () => buySkin('rainbow', 200, "🌈🧠"));
+        });
+        
+        setInterval(saveGame, 30000);
+        window.addEventListener('beforeunload', () => saveGame());
     }
     init();
 })();
