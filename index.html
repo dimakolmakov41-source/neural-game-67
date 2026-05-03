@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей 5.0.0 | 1000 сетей + ПРАЙМ</title>
+    <title>🧠 Эволюция Нейросетей 5.0.2 | Фикс покупки</title>
     <style>
         * {
             margin: 0;
@@ -67,7 +67,6 @@
             color: #ffd966;
             font-size: 24px;
             font-weight: 800;
-            letter-spacing: 2px;
         }
         .loading-sub {
             color: #88aaff;
@@ -100,7 +99,6 @@
             font-weight: 700;
             margin: 8px 0;
             cursor: pointer;
-            transition: transform 0.05s;
         }
         .menu-btn:active { transform: scale(0.97); }
 
@@ -157,7 +155,6 @@
             font-size: 22px;
             font-weight: 800;
             color: #ffaa00;
-            text-shadow: 0 0 10px #ffaa00;
             pointer-events: none;
             animation: floatUp 1s forwards;
             z-index: 100;
@@ -367,13 +364,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей 5.0.0</div>
+    <div class="loading-sub">Эволюция нейросетей 5.0.2</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.0.0</div>
+        <div class="game-version" id="menuVersion">v5.0.2</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
@@ -430,16 +427,16 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 1000 нейросетей<br>💬 Новые фразы ботов<br>👑 ПРАЙМ вместо престижа (+5%)<br>📸 Фото прогресса<br>🎨 Автофон по времени</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 1000 нейросетей<br>💬 Фейковый чат<br>👑 ПРАЙМ (+5% за раз)</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo" style="color:white;margin:15px"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.0.0";
+    const GAME_VERSION = "5.0.2";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
-    // Автофон по времени
+    // Автофон
     function updateBackgroundByTime() {
         const hours = new Date().getHours();
         let bgClass = '';
@@ -453,7 +450,7 @@
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
 
-    // Проверка версии и сброс устаревших данных
+    // Версия
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         localStorage.removeItem('neuralEvoSave');
@@ -462,23 +459,24 @@
 
     // Переменные
     let points = 100;
-    let prime = 0;          // прайм-уровни
+    let prime = 0;
     let totalSpent = 0;
     let purchasedCount = 0;
     let diamonds = 0;
     let currentSkin = "🧠";
     let bonusTimer = 600;
     let bonusInterval = null;
-    let primeBonus = 1;     // 1 + prime * 0.05
+    let primeBonus = 1;
     let totalClicks = 0;
     let skins = { neon: false, gold: false, rainbow: false };
     let soundEnabled = false;
 
-    // 1000 НЕЙРОСЕТЕЙ
+    // 1000 НЕЙРОСЕТЕЙ С УМЕРЕННЫМИ ЦЕНАМИ
     let upgrades = [];
     for(let i = 0; i < 1000; i++){
-        let power = i === 0 ? 1 : Math.floor(Math.pow(i + 1, 1.2));
-        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.22, i));
+        let power = i === 0 ? 1 : 1 + Math.floor(i / 8);
+        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.12, i));
+        
         let name = `🧠 Нейросеть #${i+1}`;
         if(i < 100){
             const coolNames = [
@@ -515,8 +513,7 @@
         upgrades500:{name:"500 сетей",completed:false,progress:0,target:500,reward:500},
         upgrades1000:{name:"ВСЕ 1000 СЕТЕЙ!",completed:false,progress:0,target:1000,reward:2000},
         prime1:{name:"Прайм 1",completed:false,progress:0,target:1,reward:50},
-        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10},
-        diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50}
+        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10}
     };
 
     const promoCodes = { 
@@ -526,37 +523,19 @@
         '1000nets':{points:100000,diamonds:1000} 
     };
 
-    // ЧАТ С 40+ ФРАЗАМИ
+    // Чат
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
     const botPhrases = [
         "🔴 Анон: Кто тут самый кликабельный?", "🤖 Бот: Прайм это сила!", 
         "💎 Бот: У кого алмазы есть?", "👑 Бот: Дима лучший создатель!",
         "🔥 Чат: 1000 нейросетей имба!", "🧠 Гений: Купил 500 сетей!",
-        "⚡ Спидран: 10000 кликов за час!", "💀 Нуб: Как сделать прайм?",
-        "🎉 Победитель: Выиграл 5000 очков!", "😭 Неудачник: Всё проиграл...",
-        "🤖 Бот: Прайм даёт +5% к силе", "👑 Король: У меня 10 праймов!",
-        "🔥 Чат: Автофон прикольная тема", "💎 Алмазный магнат: 500 алмазов!",
-        "🧠 Бот: Нейросети рулят", "⚡ Бот: Кликай быстрее!",
-        "🎮 Геймер: Игра топ", "📱 Мобила: Тоже норм работает",
-        "🌙 Ночной волк: Фон вечером красивый", "☀️ Дневной: Утром тоже норм",
-        "🤖 Бот: 1000 нейросетей дохуя", "💎 Бот: Алмазы падают с шансом 1%",
-        "👑 Бот: Прайм доступен с 10000 очков", "🔥 Бот: Чем больше сетей, тем сильнее клик",
-        "😎 Крутой: У меня 50 праймов", "🤓 Задрот: 24 часа в игре",
-        "🎯 Снайпер: Точные клики", "🚀 Космос: Фон космос топ",
-        "🏆 Чемпион: Все достижения собрал", "💀 Легенда: Прошёл игру 100 раз",
-        "🤖 Бот: Скины можно купить за алмазы", "🛒 Шопоголик: Все скины купил",
-        "📸 Фотограф: Сохранил прогресс в фото", "💬 Чатила: /stats полезная команда",
-        "🎨 Художник: Фоны красивые", "⚡ Энерджайзер: Кликаю без остановки",
-        "🧠 Умник: Сила клика растёт экспоненциально", "👑 Властелин: Прайм-бонус накапливается",
-        "🔥 Огонь: Комбо не нужен, главное клики", "💎 Бот: Копи алмазы на скины"
+        "⚡ Спидран: 10000 кликов за час!"
     ];
 
     function renderChat(){
         let html = '';
         chatMessages.slice(-30).forEach(m => html += `<div class="chat-message"><span class="user">${m.user}:</span> ${m.text} <span style="color:#888">${m.time}</span></div>`);
         document.getElementById('chatMessages').innerHTML = html;
-        const container = document.querySelector('.chat-container');
-        if(container) container.scrollTop = container.scrollHeight;
     }
 
     function sendChatMessage(){
@@ -633,7 +612,6 @@
         achievements.upgrades1000.progress = purchasedCount;
         achievements.prime1.progress = prime;
         achievements.diamonds50.progress = diamonds;
-        achievements.diamonds200.progress = diamonds;
         
         for(let key in achievements){
             let a = achievements[key];
@@ -661,6 +639,7 @@
         updateUI();
         saveGame();
         updateAchievements();
+        renderUpgrades(); // Обновляем кнопки покупки после каждого клика
         if(navigator.vibrate) navigator.vibrate(20);
     }
 
@@ -693,41 +672,42 @@
 
     function renderUpgrades(){
         let html = '';
-        let displayCount = Math.min(upgrades.length, 150);
+        let displayCount = Math.min(upgrades.length, 200);
         for(let i = 0; i < displayCount; i++){
             let up = upgrades[i];
-            let disabled = (!up.purchased && points >= up.price) ? '' : 'purchased';
-            html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${up.purchased ? '✅' : `💰 ${up.price}`}</span></div>`;
+            let canAfford = points >= Math.floor(up.price);
+            let disabled = (up.purchased || !canAfford) ? 'purchased' : '';
+            let priceDisplay = up.purchased ? '✅' : `💰 ${Math.floor(up.price)}`;
+            html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${priceDisplay}</span></div>`;
         }
         document.getElementById('upgradesContainer').innerHTML = html;
-        if(upgrades.length > 150){
-            let more = document.createElement('div');
-            more.className = 'upgrade-card purchased';
-            more.innerHTML = `<span class="upgrade-name">... и ещё ${upgrades.length-150} нейросетей (листай вверх)</span>`;
-            document.getElementById('upgradesContainer').appendChild(more);
-        }
     }
 
     function buyUpgrade(id){
         let up = upgrades.find(u => u.id === id);
-        if(!up || up.purchased || points < up.price) return;
-        points -= up.price;
-        totalSpent += up.price;
+        if(!up || up.purchased) return;
+        let priceFloor = Math.floor(up.price);
+        if(points < priceFloor) {
+            showToast(`❌ Не хватает: нужно ${priceFloor} очков`);
+            return;
+        }
+        points -= priceFloor;
+        totalSpent += priceFloor;
         up.purchased = true;
         purchasedCount++;
         updateUI();
         renderUpgrades();
         saveGame();
         updateAchievements();
+        showToast(`✅ ${up.name} куплена! +${up.power} к силе`);
     }
 
-    // ПРАЙМ (вместо престижа)
     function doPrime(){
         if(points < 10000){
             showToast(`❌ Нужно 10000 очков для ПРАЙМА! У вас ${Math.floor(points)}`);
             return;
         }
-        if(confirm(`👑 СОВЕРШИТЬ ПРАЙМ?\nВы получите +5% бонус навсегда!\nОчки и нейросети сбросятся.\nТекущий бонус: +${Math.floor((primeBonus-1)*100)}%`)){
+        if(confirm(`👑 СОВЕРШИТЬ ПРАЙМ?\nВы получите +5% бонус навсегда!\nОчки и нейросети сбросятся.`)){
             prime++;
             points = 100;
             totalSpent = 0;
@@ -841,7 +821,7 @@
     }
 
     function showPrimeModal(){
-        document.getElementById('primeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для ПРАЙМА<br>Текущий прайм: ${prime}<br>Следующий бонус: +5% к силе клика`;
+        document.getElementById('primeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для ПРАЙМА<br>Текущий прайм: ${prime}<br>Следующий бонус: +5%`;
         document.getElementById('primeModal').classList.add('show');
     }
 
@@ -849,11 +829,7 @@
         let html = '';
         for(let k in achievements){
             let a = achievements[k];
-            html += `<div style="padding:8px;background:#1a3150;margin:8px;border-radius:20px;text-align:left;">
-                        <b style="color:#ffd966">${a.name}</b><br>
-                        <span style="color:#aac8f0">${a.progress}/${a.target}</span>
-                        <span style="float:right">${a.completed ? '✅ +'+a.reward+'💎' : '🔒'}</span>
-                    </div>`;
+            html += `<div style="padding:8px;background:#1a3150;margin:8px;border-radius:20px;"><b style="color:#ffd966">${a.name}</b><br>${a.progress}/${a.target} ${a.completed ? '✅ +'+a.reward+'💎' : '🔒'}</div>`;
         }
         document.getElementById('achievementsList').innerHTML = html;
         document.getElementById('achievementsModal').classList.add('show');
