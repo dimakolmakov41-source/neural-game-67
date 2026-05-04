@@ -101,10 +101,6 @@
             cursor: pointer;
         }
         .menu-btn:active { transform: scale(0.97); }
-        .menu-btn.disabled, .upgrade-card.disabled {
-            pointer-events: none;
-            opacity: 0.5;
-        }
 
         .top-bar, .diamond-bar, .stats-panel {
             background: rgba(0, 10, 20, 0.7);
@@ -407,13 +403,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.0.3</div>
+    <div class="loading-sub">Эволюция нейросетей v5.0.4</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.0.3</div>
+        <div class="game-version" id="menuVersion">v5.0.4</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
@@ -478,7 +474,7 @@
 
 <script>
 (function(){
-    const GAME_VERSION = "5.0.3";
+    const GAME_VERSION = "5.0.4";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
     // Автофон
@@ -495,11 +491,11 @@
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
 
-    // Версия
+    // ========== БЕЗ СБРОСА ПРОГРЕССА ==========
+    // Просто обновляем версию, НЕ удаляем сохранения
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
-        localStorage.removeItem('neuralEvoSave');
-        localStorage.removeItem('chatMessages');
+        console.log("✅ Игра обновлена до версии " + GAME_VERSION + ". Прогресс сохранён!");
     }
 
     // Переменные
@@ -564,7 +560,8 @@
         upgrades500:{name:"500 сетей",completed:false,progress:0,target:500,reward:500},
         upgrades1000:{name:"ВСЕ 1000 СЕТЕЙ!",completed:false,progress:0,target:1000,reward:2000},
         prime1:{name:"Прайм 1",completed:false,progress:0,target:1,reward:50},
-        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10}
+        diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10},
+        diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50}
     };
 
     const promoCodes = { 
@@ -697,6 +694,7 @@
         achievements.upgrades1000.progress = purchasedCount;
         achievements.prime1.progress = prime;
         achievements.diamonds50.progress = diamonds;
+        achievements.diamonds200.progress = diamonds;
         
         for(let key in achievements){
             let a = achievements[key];
@@ -954,7 +952,7 @@
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             document.getElementById('mainMenu').classList.remove('hidden');
-        }, 2000);
+        }, 1500);
     }
 
     function init(){
