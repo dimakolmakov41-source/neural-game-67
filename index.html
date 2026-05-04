@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей 5.0.2 | Фикс покупки</title>
+    <title>🧠 Эволюция Нейросетей | Анти-автокликер</title>
     <style>
         * {
             margin: 0;
@@ -101,6 +101,10 @@
             cursor: pointer;
         }
         .menu-btn:active { transform: scale(0.97); }
+        .menu-btn.disabled, .upgrade-card.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
 
         .top-bar, .diamond-bar, .stats-panel {
             background: rgba(0, 10, 20, 0.7);
@@ -119,6 +123,27 @@
         .stat-item { text-align: center; }
         .stat-value { color: #ffd966; font-size: 14px; font-weight: 800; }
         .stat-label { color: #aac8f0; font-size: 9px; }
+
+        .warning-block {
+            background: rgba(220, 38, 38, 0.9);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 60px;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            display: none;
+        }
+        .warning-block.show {
+            display: block;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
         .brain-container {
             display: flex;
@@ -141,6 +166,12 @@
             border: 3px solid #ffffaa;
             animation: float 3s infinite;
         }
+        .brain.blocked {
+            filter: grayscale(0.5);
+            cursor: not-allowed;
+            opacity: 0.7;
+            animation: none;
+        }
         @keyframes float {
             0%,100% { transform: translateY(0px); }
             50% { transform: translateY(-6px); }
@@ -148,6 +179,10 @@
         .brain:active {
             transform: translateY(6px);
             box-shadow: 0 6px 0 #aa4400;
+        }
+        .brain.blocked:active {
+            transform: none;
+            box-shadow: 0 12px 0 #aa4400;
         }
 
         .click-effect {
@@ -206,6 +241,10 @@
             border-color: #00ff00;
             pointer-events: none;
         }
+        .upgrade-card.blocked {
+            pointer-events: none;
+            opacity: 0.4;
+        }
 
         .upgrade-name {
             color: #c1e4ff;
@@ -237,6 +276,10 @@
             font-weight: 600;
             cursor: pointer;
             color: white;
+        }
+        .action-btn.blocked {
+            pointer-events: none;
+            opacity: 0.5;
         }
 
         .chat-container {
@@ -364,13 +407,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей 5.0.2</div>
+    <div class="loading-sub">Эволюция нейросетей v5.0.3</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.0.2</div>
+        <div class="game-version" id="menuVersion">v5.0.3</div>
         <div class="menu-btn" id="playBtn">🎮 ИГРАТЬ</div>
         <div class="menu-btn" id="photoSaveBtn">📸 СОХРАНИТЬ В ФОТО</div>
         <div class="menu-btn" id="promoMenuBtn">🎫 ПРОМОКОДЫ</div>
@@ -397,6 +440,8 @@
             <div class="stat-item"><div class="stat-value" id="primeBonus">0%</div><div class="stat-label">Бонус</div></div>
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
+
+        <div id="warningBlock" class="warning-block">⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА 0 СЕК ⚠️</div>
 
         <div class="brain-container">
             <div class="brain" id="brain">🧠</div>
@@ -427,13 +472,13 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 1000 нейросетей<br>💬 Фейковый чат<br>👑 ПРАЙМ (+5% за раз)</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ АНТИ-АВТОКЛИКЕР!<br>⚠️ Слишком быстрые клики = блокировка 10 сек<br>✨ 1000 нейросетей<br>💬 Фейковый чат<br>👑 ПРАЙМ (+5%)</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo" style="color:white;margin:15px"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.0.2";
+    const GAME_VERSION = "5.0.3";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
     // Автофон
@@ -471,7 +516,13 @@
     let skins = { neon: false, gold: false, rainbow: false };
     let soundEnabled = false;
 
-    // 1000 НЕЙРОСЕТЕЙ С УМЕРЕННЫМИ ЦЕНАМИ
+    // Анти-автокликер
+    let lastClickTime = 0;
+    let isBlocked = false;
+    let blockEndTime = 0;
+    let blockInterval = null;
+
+    // 1000 НЕЙРОСЕТЕЙ
     let upgrades = [];
     for(let i = 0; i < 1000; i++){
         let power = i === 0 ? 1 : 1 + Math.floor(i / 8);
@@ -593,6 +644,40 @@
         showToast("✅ Фото сохранено!");
     }
 
+    // Блокировка автокликера
+    function startBlock(seconds = 10) {
+        if (isBlocked) return;
+        isBlocked = true;
+        blockEndTime = Date.now() + seconds * 1000;
+        
+        const warningDiv = document.getElementById('warningBlock');
+        const brainDiv = document.getElementById('brain');
+        const actionBtns = document.querySelectorAll('.action-btn');
+        const upgradeCards = document.querySelectorAll('.upgrade-card');
+        
+        warningDiv.classList.add('show');
+        brainDiv.classList.add('blocked');
+        actionBtns.forEach(btn => btn.classList.add('blocked'));
+        upgradeCards.forEach(card => card.classList.add('blocked'));
+        
+        if (blockInterval) clearInterval(blockInterval);
+        blockInterval = setInterval(() => {
+            const remaining = Math.max(0, Math.ceil((blockEndTime - Date.now()) / 1000));
+            warningDiv.innerHTML = `⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА ${remaining} СЕК ⚠️`;
+            
+            if (remaining <= 0) {
+                clearInterval(blockInterval);
+                isBlocked = false;
+                warningDiv.classList.remove('show');
+                brainDiv.classList.remove('blocked');
+                actionBtns.forEach(btn => btn.classList.remove('blocked'));
+                upgradeCards.forEach(card => card.classList.remove('blocked'));
+                warningDiv.innerHTML = `⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА 0 СЕК ⚠️`;
+                showToast("✅ Блокировка снята. Кликайте спокойно!");
+            }
+        }, 100);
+    }
+
     // Основная логика
     function showToast(msg){
         let t = document.createElement('div'); t.className='toast'; t.innerText=msg;
@@ -632,6 +717,18 @@
     }
 
     function doClick(){
+        if (isBlocked) return;
+        
+        const now = Date.now();
+        const timeDiff = now - lastClickTime;
+        
+        if (lastClickTime !== 0 && timeDiff < 50) {
+            startBlock(10);
+            return;
+        }
+        
+        lastClickTime = now;
+        
         let gain = getClickPower();
         points += gain;
         totalClicks++;
@@ -639,7 +736,7 @@
         updateUI();
         saveGame();
         updateAchievements();
-        renderUpgrades(); // Обновляем кнопки покупки после каждого клика
+        renderUpgrades();
         if(navigator.vibrate) navigator.vibrate(20);
     }
 
@@ -647,8 +744,10 @@
         e.preventDefault();
         doClick();
         let brain = document.getElementById('brain');
-        brain.style.transform = 'translateY(6px)';
-        setTimeout(() => brain.style.transform = '', 100);
+        if (!isBlocked) {
+            brain.style.transform = 'translateY(6px)';
+            setTimeout(() => brain.style.transform = '', 100);
+        }
         let rect = brain.getBoundingClientRect();
         let x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left+80);
         let y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top+80);
@@ -681,9 +780,16 @@
             html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${priceDisplay}</span></div>`;
         }
         document.getElementById('upgradesContainer').innerHTML = html;
+        if (isBlocked) {
+            document.querySelectorAll('.upgrade-card').forEach(card => card.classList.add('blocked'));
+        }
     }
 
     function buyUpgrade(id){
+        if (isBlocked) {
+            showToast("❌ Сначала снимите блокировку автокликера!");
+            return;
+        }
         let up = upgrades.find(u => u.id === id);
         if(!up || up.purchased) return;
         let priceFloor = Math.floor(up.price);
@@ -775,6 +881,10 @@
     }
 
     function buySkin(name, price, emoji){
+        if (isBlocked) {
+            showToast("❌ Сначала снимите блокировку автокликера!");
+            return;
+        }
         if(diamonds >= price){
             diamonds -= price;
             skins[name] = true;
