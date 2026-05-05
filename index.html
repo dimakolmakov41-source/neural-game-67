@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | Локальные таймеры</title>
+    <title>🧠 Эволюция Нейросетей | 200 сетей</title>
     <style>
         * {
             margin: 0;
@@ -461,13 +461,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.6.0</div>
+    <div class="loading-sub">Эволюция нейросетей v5.7.0</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.6.0</div>
+        <div class="game-version" id="menuVersion">v5.7.0</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn small" id="exportBtn">💾 ЭКСПОРТ</div>
@@ -503,14 +503,12 @@
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
 
-        <!-- Локальные таймеры -->
         <div class="global-timers">
             <div class="timer-item">🎲 БОСС: <span id="bossCountdown">05:00</span></div>
             <div class="timer-item">🔄 ПЕРЕЗАГРУЗКА: <span id="reloadCountdown">03:00</span></div>
             <div class="timer-item">⏱️ БОНУС: <span id="bonusCountdown">10:00</span></div>
         </div>
 
-        <!-- Босс -->
         <div class="boss-container" id="bossContainer">
             <div class="boss-name" id="bossName">🧠 БОСС-НЕЙРОСЕТЬ</div>
             <div class="boss-hp-bar"><div class="boss-hp-fill" id="bossHpFill" style="width: 100%"></div></div>
@@ -532,7 +530,7 @@
             </div>
         </div>
 
-        <div class="upgrades-title">⚡ НЕЙРОСЕТИ (1000 шт)</div>
+        <div class="upgrades-title">⚡ НЕЙРОСЕТИ (200 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
 
         <div class="action-buttons">
@@ -545,7 +543,6 @@
     </div>
 </div>
 
-<!-- Скрытое меню -->
 <div id="cheatPanel" class="cheat-panel">
     <div class="cheat-title">🔓 СЕКРЕТНОЕ МЕНЮ</div>
     <button class="cheat-btn" id="cheatPoints">💎 +100 000 ОЧКОВ</button>
@@ -555,19 +552,18 @@
     <button class="cheat-btn cheat-close" id="cheatClose">ЗАКРЫТЬ</button>
 </div>
 
-<!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ ЛОКАЛЬНЫЕ ТАЙМЕРЫ (без интернета)<br>✨ Босс каждые 5 минут<br>✨ Перезагрузка каждые 3 минуты<br>✨ 1000 нейросетей</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ 200 НЕЙРОСЕТЕЙ<br>✨ Босс каждые 5 минут<br>✨ Перезагрузка каждые 3 минуты</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.6.0";
+    const GAME_VERSION = "5.7.0";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
     
-    // Автофон по времени
+    // Автофон
     function updateBackgroundByTime() {
         const hours = new Date().getHours();
         let bgClass = '';
@@ -581,7 +577,6 @@
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
     
-    // Версия
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         console.log("Обновлено до " + GAME_VERSION);
@@ -593,19 +588,18 @@
     let soundEnabled = false;
     let primeBonus = 1;
     
-    // Локальные таймеры (отсчёт от запуска игры)
-    let bossTimer = 300;      // 5 минут
-    let reloadTimer = 180;    // 3 минуты
-    let bonusTimer = 600;     // 10 минут
+    // Локальные таймеры
+    let bossTimer = 300;
+    let reloadTimer = 180;
+    let bonusTimer = 600;
     
     // Босс
     let bossActive = false;
     let bossHp = 0;
     let bossMaxHp = 1000;
     let bossReward = 100;
-    let bossRewardValue = 100;
     
-    // 1000 НЕЙРОСЕТЕЙ С НАЗВАНИЯМИ
+    // 200 НЕЙРОСЕТЕЙ С НАЗВАНИЯМИ
     let upgrades = [];
     const coolNames = [
         "🤖 Перцептрон", "⚡ Нейро-искра", "🧬 Сверточная", "🔮 Рекуррентная", "⚙️ Трансформер",
@@ -621,13 +615,12 @@
         "⚡ Импульсный", "🔥 Феникс", "❄️ Ледяной дракон", "🌪️ Ураган", "🦾 Ассасин",
         "👁️ Оракул", "🎯 Снайпер", "🧬 Эволюция", "🤖 Аватар", "🌀 Хаос",
         "💎 Алмазный", "👑 Император", "🌌 Звёздный странник", "⚛️ Атомный", "🔮 Пророк",
-        "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный", "❄️ Морозный", "🌪️ Штормовой",
-        "💀 Жнец", "🦾 Мегатрон", "🧠 Оверлорд", "⚡ Сверхновая", "🌍 Пандора"
+        "🛸 Инопланетный", "🤯 Безумие", "🔥 Пламенный", "❄️ Морозный", "🌪️ Штормовой"
     ];
     
-    for(let i = 0; i < 1000; i++){
-        let power = i === 0 ? 1 : 1 + Math.floor(i / 8);
-        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.12, i));
+    for(let i = 0; i < 200; i++){
+        let power = i === 0 ? 1 : 1 + Math.floor(i / 6);
+        let price = i === 0 ? 20 : Math.floor(20 * Math.pow(1.15, i));
         let name;
         if(i < coolNames.length){
             name = coolNames[i];
@@ -637,30 +630,28 @@
         upgrades.push({ id: i, name: name, power: power, price: price, purchased: false });
     }
     
-    // Достижения
+    // Достижения (обновлены под 200)
     let achievements = {
         clicks100:{name:"100 кликов",completed:false,progress:0,target:100,reward:5},
         clicks1000:{name:"1000 кликов",completed:false,progress:0,target:1000,reward:20},
         upgrades10:{name:"10 сетей",completed:false,progress:0,target:10,reward:10},
         upgrades50:{name:"50 сетей",completed:false,progress:0,target:50,reward:50},
         upgrades100:{name:"100 сетей",completed:false,progress:0,target:100,reward:100},
-        upgrades250:{name:"250 сетей",completed:false,progress:0,target:250,reward:250},
-        upgrades500:{name:"500 сетей",completed:false,progress:0,target:500,reward:500},
-        upgrades1000:{name:"ВСЕ 1000 СЕТЕЙ!",completed:false,progress:0,target:1000,reward:2000},
+        upgrades200:{name:"ВСЕ 200 СЕТЕЙ!",completed:false,progress:0,target:200,reward:500},
         prime1:{name:"Прайм 1",completed:false,progress:0,target:1,reward:50},
         diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10},
         diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50},
         boss1:{name:"Первый босс",completed:false,progress:0,target:1,reward:100}
     };
     
-    const promoCodes = { 'dima':{points:500,diamonds:10}, 'dima god':{points:5000,diamonds:100}, 'start':{points:100,diamonds:5}, '1000nets':{points:100000,diamonds:1000} };
+    const promoCodes = { 'dima':{points:500,diamonds:10}, 'dima god':{points:5000,diamonds:100}, 'start':{points:100,diamonds:5}, '200nets':{points:50000,diamonds:500} };
     
     // Чат
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
     const botPhrases = [
         "🔴 Анон: Появился босс! Бейте его!", "🤖 Бот: Бей босса, получай алмазы!",
         "💎 Бот: Алмазы выпадают с шансом 1%", "👑 Бот: Прайм даёт +5% к силе",
-        "🔥 Чат: 1000 нейросетей имба!", "🧠 Гений: Купил 500 сетей!"
+        "🔥 Чат: 200 нейросетей имба!"
     ];
     
     function renderChat(){
@@ -674,7 +665,7 @@
         let text = input.value.trim();
         if(!text) return;
         if(text.startsWith('/stats')){
-            text = `⭐ Очки: ${Math.floor(points)} | Прайм: ${prime} (+${Math.floor((primeBonus-1)*100)}%) | Сетей: ${purchasedCount}/1000 | Алмазов: ${diamonds}`;
+            text = `⭐ Очки: ${Math.floor(points)} | Прайм: ${prime} (+${Math.floor((primeBonus-1)*100)}%) | Сетей: ${purchasedCount}/200 | Алмазов: ${diamonds}`;
         }
         chatMessages.push({ user: "Вы", text: text, time: new Date().toLocaleTimeString() });
         if(chatMessages.length > 100) chatMessages = chatMessages.slice(-80);
@@ -709,7 +700,7 @@
         ctx.font = 'bold 18px monospace';
         ctx.fillText(`ОЧКИ: ${Math.floor(points).toLocaleString()}`, 50, 160);
         ctx.fillText(`ПРАЙМ: ${prime} (+${Math.floor((primeBonus-1)*100)}%)`, 50, 200);
-        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/1000`, 50, 240);
+        ctx.fillText(`НЕЙРОСЕТЕЙ: ${purchasedCount}/200`, 50, 240);
         ctx.fillText(`ПОТРАЧЕНО: ${totalSpent.toLocaleString()}`, 50, 280);
         ctx.fillText(`АЛМАЗОВ: ${diamonds}💎`, 50, 320);
         ctx.fillText(`КЛИКОВ: ${totalClicks.toLocaleString()}`, 50, 360);
@@ -736,9 +727,7 @@
         achievements.upgrades10.progress = purchasedCount;
         achievements.upgrades50.progress = purchasedCount;
         achievements.upgrades100.progress = purchasedCount;
-        achievements.upgrades250.progress = purchasedCount;
-        achievements.upgrades500.progress = purchasedCount;
-        achievements.upgrades1000.progress = purchasedCount;
+        achievements.upgrades200.progress = purchasedCount;
         achievements.prime1.progress = prime;
         achievements.diamonds50.progress = diamonds;
         achievements.diamonds200.progress = diamonds;
@@ -797,14 +786,12 @@
         } catch(e){}
     }
     
-    // Босс
     function spawnBoss() {
         if(bossActive) return;
         bossActive = true;
-        bossMaxHp = Math.floor(1000 + (prime * 100) + (purchasedCount * 2));
+        bossMaxHp = Math.floor(1000 + (prime * 100) + (purchasedCount * 3));
         bossHp = bossMaxHp;
-        bossReward = Math.floor(100 + (prime * 10) + (purchasedCount / 10));
-        bossRewardValue = bossReward;
+        bossReward = Math.floor(100 + (prime * 15) + (purchasedCount / 5));
         updateBossUI();
         showToast(`🔥 ПОЯВИЛСЯ БОСС! HP: ${bossMaxHp}, Награда: ${bossReward}💎`);
         playWinSound();
@@ -846,7 +833,6 @@
         saveGame();
     }
     
-    // Обновление всех таймеров (каждую секунду)
     function updateTimers() {
         if(bossTimer > 0) {
             bossTimer--;
@@ -965,8 +951,8 @@
     }
     
     function doPrime(){
-        if(points < 10000){ showToast(`❌ Нужно 10000 очков для ПРАЙМА! У вас ${Math.floor(points)}`); return; }
-        if(confirm(`👑 СОВЕРШИТЬ ПРАЙМ?\nВы получите +5% бонус навсегда!\nОчки и нейросети сбросятся.`)){
+        if(points < 10000){ showToast(`❌ Нужно 10000 очков для ПРАЙМА!`); return; }
+        if(confirm(`👑 СОВЕРШИТЬ ПРАЙМ?\n+5% бонус навсегда!\nОчки и нейросети сбросятся.`)){
             prime++;
             points = 100;
             totalSpent = 0;
@@ -976,14 +962,14 @@
             updateUI();
             renderUpgrades();
             saveGame();
-            showToast(`✨ ПРАЙМ ${prime}! Бонус +${Math.floor((primeBonus-1)*100)}% к силе клика!`);
+            showToast(`✨ ПРАЙМ ${prime}! Бонус +${Math.floor((primeBonus-1)*100)}%`);
             updateAchievements();
             document.getElementById('primeModal').classList.remove('show');
         }
     }
     
     function resetProgress() {
-        if(confirm("⚠️ ВНИМАНИЕ! Это удалит ВЕСЬ ваш прогресс навсегда!\nВы уверены?")) {
+        if(confirm("⚠️ ВНИМАНИЕ! Это удалит ВЕСЬ прогресс навсегда!\nВы уверены?")) {
             localStorage.clear();
             showToast("🗑️ Прогресс сброшен. Перезагрузка...");
             setTimeout(() => { location.reload(); }, 1500);
@@ -1148,7 +1134,6 @@
             e.target.value = '';
         });
         document.getElementById('resetBtn').addEventListener('click', resetProgress);
-        
         document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
         document.getElementById('chatInput').addEventListener('keypress', e => { if(e.key === 'Enter') sendChatMessage(); });
         document.getElementById('playBtn').addEventListener('click', showGame);
