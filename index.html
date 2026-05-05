@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | Авто-перезагрузка 5 мин</title>
+    <title>🧠 Эволюция Нейросетей | Босс-нейросеть</title>
     <style>
         * {
             margin: 0;
@@ -93,9 +93,6 @@
             display: inline-block;
             border-radius: 20px;
         }
-        .game-version:active {
-            background: rgba(255,255,255,0.1);
-        }
 
         .menu-buttons-row {
             display: flex;
@@ -118,6 +115,10 @@
         .menu-btn.small {
             padding: 10px;
             font-size: 14px;
+        }
+        .menu-btn.danger {
+            background: linear-gradient(145deg, #aa0000, #660000);
+            border-color: #ff8888;
         }
         .menu-btn:active { transform: scale(0.97); }
 
@@ -169,21 +170,46 @@
         .stat-value { color: #ffd966; font-size: 14px; font-weight: 800; }
         .stat-label { color: #aac8f0; font-size: 9px; }
 
-        .warning-block {
-            background: rgba(220, 38, 38, 0.9);
-            color: white;
-            text-align: center;
-            padding: 8px;
-            border-radius: 60px;
+        /* Босс */
+        .boss-container {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 30px;
+            padding: 12px;
             margin: 10px 0;
-            font-weight: bold;
-            font-size: 14px;
-            display: none;
+            text-align: center;
         }
-        .warning-block.show { display: block; animation: blink 1s infinite; }
-        @keyframes blink {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        .boss-name {
+            color: #ff5555;
+            font-size: 18px;
+            font-weight: 800;
+            text-shadow: 0 0 5px #ff0000;
+        }
+        .boss-hp-bar {
+            background: #330000;
+            border-radius: 20px;
+            height: 20px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        .boss-hp-fill {
+            background: linear-gradient(145deg, #ff0000, #aa0000);
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.2s;
+        }
+        .boss-hp-text {
+            color: white;
+            font-size: 12px;
+        }
+        .boss-reward {
+            color: #ffaa00;
+            font-size: 11px;
+        }
+        .boss-timer {
+            color: #88aaff;
+            font-size: 11px;
+            margin-top: 5px;
         }
 
         .brain-container {
@@ -207,23 +233,13 @@
             border: 3px solid #ffffaa;
             animation: float 3s infinite;
         }
-        .brain.blocked {
-            filter: grayscale(0.5);
-            cursor: not-allowed;
-            opacity: 0.7;
-            animation: none;
-        }
-        @keyframes float {
-            0%,100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-        }
         .brain:active {
             transform: translateY(6px);
             box-shadow: 0 6px 0 #aa4400;
         }
-        .brain.blocked:active {
-            transform: none;
-            box-shadow: 0 12px 0 #aa4400;
+        @keyframes float {
+            0%,100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
         }
 
         .click-effect {
@@ -281,10 +297,6 @@
             border-color: #00ff00;
             pointer-events: none;
         }
-        .upgrade-card.blocked {
-            pointer-events: none;
-            opacity: 0.4;
-        }
         .upgrade-name { color: #c1e4ff; font-weight: 700; }
         .upgrade-price {
             background: #2b425b;
@@ -310,10 +322,6 @@
             font-weight: 600;
             cursor: pointer;
             color: white;
-        }
-        .action-btn.blocked {
-            pointer-events: none;
-            opacity: 0.5;
         }
 
         .chat-container {
@@ -407,10 +415,6 @@
             margin: 5px;
             cursor: pointer;
         }
-        .file-input {
-            margin: 15px 0;
-            color: white;
-        }
 
         .toast {
             position: fixed;
@@ -438,17 +442,18 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.1.3</div>
+    <div class="loading-sub">Эволюция нейросетей v5.2.0</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion" title="Нажми и удержи для секретного меню">v5.1.3</div>
+        <div class="game-version" id="menuVersion">v5.2.0</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn small" id="exportBtn">💾 ЭКСПОРТ</div>
             <div class="menu-btn small" id="importBtn">📂 ИМПОРТ</div>
+            <div class="menu-btn small danger" id="resetBtn">🗑️ СБРОС</div>
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none">
         
@@ -466,19 +471,35 @@
             <div class="resource-item"><span>⚡</span><span class="resource-value" id="power">1</span></div>
             <div class="resource-item"><span>👑</span><span class="resource-value" id="primeLevel">0</span></div>
         </div>
+
         <div class="diamond-bar">
             <div class="diamond-item">💎 <span class="diamond-value" id="diamonds">0</span></div>
             <div class="diamond-item">⏱️ <span class="timer-value" id="timerDisplay">10:00</span></div>
         </div>
+
         <div class="stats-panel">
             <div class="stat-item"><div class="stat-value" id="netCount">0</div><div class="stat-label">Сетей</div></div>
             <div class="stat-item"><div class="stat-value" id="totalSpent">0</div><div class="stat-label">Потрачено</div></div>
             <div class="stat-item"><div class="stat-value" id="primeBonus">0%</div><div class="stat-label">Бонус</div></div>
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
-        <div id="warningBlock" class="warning-block">⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА 0 СЕК ⚠️</div>
-        <div class="brain-container"><div class="brain" id="brain">🧠</div></div>
+
+        <!-- БОСС -->
+        <div class="boss-container" id="bossContainer">
+            <div class="boss-name" id="bossName">🧠 БОСС-НЕЙРОСЕТЬ</div>
+            <div class="boss-hp-bar">
+                <div class="boss-hp-fill" id="bossHpFill" style="width: 100%"></div>
+            </div>
+            <div class="boss-hp-text" id="bossHpText">❤️ 1000 / 1000</div>
+            <div class="boss-reward" id="bossReward">💰 Награда: 100💎</div>
+            <div class="boss-timer" id="bossTimer">⏱️ Появится через: --:--</div>
+        </div>
+
+        <div class="brain-container">
+            <div class="brain" id="brain">🧠</div>
+        </div>
         <div class="click-hint" id="clickHint">+1</div>
+
         <div class="chat-container">
             <div id="chatMessages"></div>
             <div class="chat-input-area">
@@ -486,13 +507,16 @@
                 <button class="chat-send" id="chatSendBtn">➤</button>
             </div>
         </div>
+
         <div class="upgrades-title">⚡ НЕЙРОСЕТИ (1000 шт)</div>
         <div class="upgrades-container" id="upgradesContainer"></div>
+
         <div class="action-buttons">
             <div class="action-btn" id="backToMenuBtn">◀ МЕНЮ</div>
             <div class="action-btn" id="shopBtn">🛒 СКИНЫ</div>
             <div class="action-btn" id="soundBtn">🔊 ЗВУК ВЫКЛ</div>
         </div>
+
         <div class="save-badge" id="saveBadge">💾 автосохранение</div>
     </div>
 </div>
@@ -510,13 +534,13 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 5 МИНУТ ВЕЗДЕ!<br>✨ Экспорт/импорт прогресса<br>✨ 1000 нейросетей<br>✨ Анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ БОСС-НЕЙРОСЕТЬ (каждый час)<br>✨ КНОПКА СБРОСА ПРОГРЕССА<br>✨ Удалён анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.1.3";
+    const GAME_VERSION = "5.2.0";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
     // Автофон
@@ -533,7 +557,6 @@
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
 
-    // Проверка версии (без сброса)
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         console.log("✅ Игра обновлена до " + GAME_VERSION);
@@ -544,9 +567,14 @@
     let currentSkin = "🧠", bonusTimer = 600, bonusInterval = null;
     let primeBonus = 1, totalClicks = 0, skins = { neon: false, gold: false, rainbow: false };
     let soundEnabled = false;
-    let lastClickTime = 0, isBlocked = false, blockEndTime = 0, blockInterval = null;
-    let autoReloadTimer = null;
-    let autoReloadWarningTimer = null;
+    
+    // Босс
+    let bossActive = false;
+    let bossHp = 0;
+    let bossMaxHp = 1000;
+    let bossReward = 100;
+    let nextBossTime = 0;
+    let bossTimerInterval = null;
 
     // 1000 нейросетей
     let upgrades = [];
@@ -589,13 +617,17 @@
         upgrades1000:{name:"ВСЕ 1000 СЕТЕЙ!",completed:false,progress:0,target:1000,reward:2000},
         prime1:{name:"Прайм 1",completed:false,progress:0,target:1,reward:50},
         diamonds50:{name:"50 алмазов",completed:false,progress:0,target:50,reward:10},
-        diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50}
+        diamonds200:{name:"200 алмазов",completed:false,progress:0,target:200,reward:50},
+        boss1:{name:"Первый босс",completed:false,progress:0,target:1,reward:100}
     };
 
     const promoCodes = { 'dima':{points:500,diamonds:10}, 'dima god':{points:5000,diamonds:100}, 'start':{points:100,diamonds:5}, '1000nets':{points:100000,diamonds:1000} };
 
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-    const botPhrases = ["🔴 Анон: Кто тут самый кликабельный?", "🤖 Бот: Прайм это сила!", "💎 Бот: У кого алмазы есть?", "👑 Бот: Дима лучший создатель!"];
+    const botPhrases = [
+        "🔴 Анон: Появился босс! Бейте его!", "🤖 Бот: Босс сильный, но награда большая", 
+        "💎 Бот: За босса дают 100 алмазов", "👑 Бот: Убил босса! +100💎"
+    ];
 
     function renderChat(){
         let html = '';
@@ -647,41 +679,12 @@
         ctx.fillText(`КЛИКОВ: ${totalClicks.toLocaleString()}`, 50, 360);
         ctx.fillStyle = '#88aaff';
         ctx.font = '12px monospace';
-        ctx.fillText(`Версия ${GAME_VERSION} | Создано Дима и ИИ`, 70, 520);
+        ctx.fillText(`Версия ${GAME_VERSION}`, 150, 520);
         const link = document.createElement('a');
         link.download = `neural_${Date.now()}.png`;
         link.href = canvas.toDataURL();
         link.click();
         showToast("✅ Фото сохранено!");
-    }
-
-    function startBlock(seconds = 10) {
-        if (isBlocked) return;
-        isBlocked = true;
-        blockEndTime = Date.now() + seconds * 1000;
-        const warningDiv = document.getElementById('warningBlock');
-        const brainDiv = document.getElementById('brain');
-        const actionBtns = document.querySelectorAll('.action-btn');
-        const upgradeCards = document.querySelectorAll('.upgrade-card');
-        warningDiv.classList.add('show');
-        brainDiv.classList.add('blocked');
-        actionBtns.forEach(btn => btn.classList.add('blocked'));
-        upgradeCards.forEach(card => card.classList.add('blocked'));
-        if (blockInterval) clearInterval(blockInterval);
-        blockInterval = setInterval(() => {
-            const remaining = Math.max(0, Math.ceil((blockEndTime - Date.now()) / 1000));
-            warningDiv.innerHTML = `⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА ${remaining} СЕК ⚠️`;
-            if (remaining <= 0) {
-                clearInterval(blockInterval);
-                isBlocked = false;
-                warningDiv.classList.remove('show');
-                brainDiv.classList.remove('blocked');
-                actionBtns.forEach(btn => btn.classList.remove('blocked'));
-                upgradeCards.forEach(card => card.classList.remove('blocked'));
-                warningDiv.innerHTML = `⚠️ ОБНАРУЖЕН АВТОКЛИКЕР! БЛОКИРОВКА НА 0 СЕК ⚠️`;
-                showToast("✅ Блокировка снята. Кликайте спокойно!");
-            }
-        }, 100);
     }
 
     function showToast(msg){
@@ -703,6 +706,10 @@
         achievements.prime1.progress = prime;
         achievements.diamonds50.progress = diamonds;
         achievements.diamonds200.progress = diamonds;
+        
+        let bossKills = parseInt(localStorage.getItem('bossKills') || '0');
+        achievements.boss1.progress = bossKills;
+        
         for(let key in achievements){
             let a = achievements[key];
             if(!a.completed && a.progress >= a.target){
@@ -721,17 +728,76 @@
         return Math.floor(base * primeBonus);
     }
 
-    function doClick(){
-        if (isBlocked) return;
-        const now = Date.now();
-        if (lastClickTime !== 0 && (now - lastClickTime) < 50) {
-            startBlock(10);
-            return;
+    // ========== БОСС ==========
+    function spawnBoss() {
+        bossActive = true;
+        bossMaxHp = Math.floor(1000 + (prime * 100) + (purchasedCount * 2));
+        bossHp = bossMaxHp;
+        bossReward = Math.floor(100 + (prime * 10) + (purchasedCount / 10));
+        
+        updateBossUI();
+        showToast(`🔥 ПОЯВИЛСЯ БОСС-НЕЙРОСЕТЬ! HP: ${bossMaxHp}, Награда: ${bossReward}💎`);
+    }
+    
+    function updateBossUI() {
+        const percent = (bossHp / bossMaxHp) * 100;
+        document.getElementById('bossHpFill').style.width = `${percent}%`;
+        document.getElementById('bossHpText').innerHTML = `❤️ ${Math.floor(bossHp)} / ${bossMaxHp}`;
+        document.getElementById('bossReward').innerHTML = `💰 Награда: ${bossReward}💎`;
+    }
+    
+    function damageBoss(damage) {
+        if (!bossActive) return;
+        bossHp -= damage;
+        if (bossHp <= 0) {
+            // Убийство босса
+            bossActive = false;
+            diamonds += bossReward;
+            let bossKills = parseInt(localStorage.getItem('bossKills') || '0') + 1;
+            localStorage.setItem('bossKills', bossKills);
+            showToast(`🎉 ВЫ УБИЛИ БОССА! +${bossReward}💎`);
+            updateUI();
+            updateAchievements();
+            nextBossTime = Date.now() + 3600000; // 1 час
+            startBossTimer();
+        } else {
+            updateBossUI();
+            // Визуальный эффект урона боссу
+            const bossDiv = document.getElementById('bossContainer');
+            bossDiv.style.transform = 'scale(0.98)';
+            setTimeout(() => { if(bossDiv) bossDiv.style.transform = ''; }, 100);
         }
-        lastClickTime = now;
+        saveGame();
+    }
+    
+    function startBossTimer() {
+        if (bossTimerInterval) clearInterval(bossTimerInterval);
+        bossTimerInterval = setInterval(() => {
+            if (!bossActive) {
+                const remaining = Math.max(0, nextBossTime - Date.now());
+                if (remaining <= 0) {
+                    spawnBoss();
+                } else {
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    document.getElementById('bossTimer').innerHTML = `⏱️ Босс появится через: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            } else {
+                document.getElementById('bossTimer').innerHTML = `⚔️ БОСС АКТИВЕН! БЕЙТЕ ЕГО!`;
+            }
+        }, 1000);
+    }
+
+    function doClick(){
         let gain = getClickPower();
         points += gain;
         totalClicks++;
+        
+        // Урон по боссу
+        if (bossActive) {
+            damageBoss(gain);
+        }
+        
         if(Math.random() < 0.01){ diamonds++; showToast("💎 +1 алмаз!"); updateAchievements(); }
         updateUI();
         saveGame();
@@ -744,10 +810,8 @@
         e.preventDefault();
         doClick();
         let brain = document.getElementById('brain');
-        if (!isBlocked) {
-            brain.style.transform = 'translateY(6px)';
-            setTimeout(() => brain.style.transform = '', 100);
-        }
+        brain.style.transform = 'translateY(6px)';
+        setTimeout(() => brain.style.transform = '', 100);
         let rect = brain.getBoundingClientRect();
         let x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left+80);
         let y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top+80);
@@ -780,11 +844,9 @@
             html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${up.name} +${up.power}</span><span class="upgrade-price">${priceDisplay}</span></div>`;
         }
         document.getElementById('upgradesContainer').innerHTML = html;
-        if (isBlocked) document.querySelectorAll('.upgrade-card').forEach(card => card.classList.add('blocked'));
     }
 
     function buyUpgrade(id){
-        if (isBlocked) { showToast("❌ Сначала снимите блокировку автокликера!"); return; }
         let up = upgrades.find(u => u.id === id);
         if(!up || up.purchased) return;
         let priceFloor = Math.floor(up.price);
@@ -818,73 +880,13 @@
         }
     }
 
-    // ========== ЭКСПОРТ ПРОГРЕССА ==========
-    function exportProgress() {
-        const saveData = {
-            version: GAME_VERSION,
-            points, prime, totalSpent, purchasedCount, diamonds, currentSkin,
-            totalClicks, soundEnabled, primeBonus,
-            upgrades: upgrades.map(u => u.purchased),
-            achievements: achievements,
-            chatMessages: chatMessages,
-            skins: skins
-        };
-        const dataStr = JSON.stringify(saveData, null, 2);
-        const blob = new Blob([dataStr], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `neural_evolution_save_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast("💾 Прогресс сохранён в файл!");
-    }
-
-    // ========== ИМПОРТ ПРОГРЕССА ==========
-    function importProgress(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (!data.version) throw new Error("Неверный файл");
-                
-                points = data.points ?? 100;
-                prime = data.prime ?? 0;
-                totalSpent = data.totalSpent ?? 0;
-                purchasedCount = data.purchasedCount ?? 0;
-                diamonds = data.diamonds ?? 0;
-                currentSkin = data.currentSkin ?? "🧠";
-                totalClicks = data.totalClicks ?? 0;
-                soundEnabled = data.soundEnabled ?? false;
-                primeBonus = data.primeBonus ?? (1 + prime * 0.05);
-                skins = data.skins ?? { neon: false, gold: false, rainbow: false };
-                chatMessages = data.chatMessages ?? [];
-                
-                if (data.upgrades) {
-                    data.upgrades.forEach((p, i) => {
-                        if (upgrades[i]) upgrades[i].purchased = p;
-                    });
-                }
-                if (data.achievements) {
-                    for (let k in data.achievements) {
-                        if (achievements[k]) achievements[k].completed = data.achievements[k].completed;
-                    }
-                }
-                
-                document.getElementById('brain').innerText = currentSkin;
-                document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
-                updateUI();
-                renderUpgrades();
-                renderChat();
-                updateAchievements();
-                saveGame();
-                showToast("✅ Прогресс успешно восстановлен!");
-            } catch(err) {
-                showToast("❌ Ошибка: неверный файл сохранения");
-                console.error(err);
-            }
-        };
-        reader.readAsText(file);
+    // Сброс прогресса
+    function resetProgress() {
+        if(confirm("⚠️ ВНИМАНИЕ! Это удалит ВЕСЬ ваш прогресс навсегда!\nОчки, алмазы, прайм, нейросети — всё сбросится.\nВы уверены?")) {
+            localStorage.clear();
+            showToast("🗑️ Прогресс сброшен. Перезагрузка...");
+            setTimeout(() => { location.reload(); }, 1500);
+        }
     }
 
     function saveGame(){
@@ -893,7 +895,8 @@
             totalClicks, soundEnabled, primeBonus, skins,
             upgrades: upgrades.map(u => u.purchased),
             achievements: achievements,
-            chatMessages: chatMessages
+            chatMessages: chatMessages,
+            bossKills: parseInt(localStorage.getItem('bossKills') || '0')
         };
         localStorage.setItem('neuralEvoSave', JSON.stringify(saveData));
         document.getElementById('saveBadge').innerText = '💾 сохранено!';
@@ -918,6 +921,7 @@
                 chatMessages = data.chatMessages ?? [];
                 if(data.upgrades) data.upgrades.forEach((p, i) => { if(upgrades[i]) upgrades[i].purchased = p; });
                 if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
+                if(data.bossKills) localStorage.setItem('bossKills', data.bossKills);
             } catch(e) { console.log("Ошибка загрузки", e); }
         }
         primeBonus = 1 + (prime * 0.05);
@@ -927,10 +931,23 @@
         renderUpgrades();
         renderChat();
         updateAchievements();
+        
+        // Восстанавливаем босса
+        const lastBossKill = localStorage.getItem('lastBossKillTime');
+        if (lastBossKill) {
+            nextBossTime = parseInt(lastBossKill) + 3600000;
+            if (nextBossTime < Date.now()) {
+                spawnBoss();
+            } else {
+                startBossTimer();
+            }
+        } else {
+            nextBossTime = Date.now() + 3600000;
+            startBossTimer();
+        }
     }
 
     function buySkin(name, price, emoji){
-        if (isBlocked) { showToast("❌ Сначала снимите блокировку автокликера!"); return; }
         if(diamonds >= price){
             diamonds -= price;
             skins[name] = true;
@@ -940,27 +957,6 @@
             saveGame();
             showToast(`✅ Скин ${emoji} куплен!`);
         } else { showToast(`❌ Нужно ${price}💎`); }
-    }
-
-    // ========== АВТО-ПЕРЕЗАГРУЗКА 5 МИНУТ ВЕЗДЕ ==========
-    function startAutoReload() {
-        if (autoReloadTimer) clearTimeout(autoReloadTimer);
-        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
-        
-        autoReloadTimer = setTimeout(() => {
-            // Показываем предупреждение за 5 секунд до перезагрузки
-            const warning = document.createElement('div');
-            warning.className = 'toast';
-            warning.style.background = 'linear-gradient(145deg, #ff5500, #aa2200)';
-            warning.style.animation = 'fadeOut 3s forwards';
-            warning.innerHTML = '🔄 Авто-перезагрузка через 5 секунд. Прогресс сохранён!';
-            document.body.appendChild(warning);
-            
-            autoReloadWarningTimer = setTimeout(() => {
-                saveGame();
-                location.reload();
-            }, 5000);
-        }, 300000); // 5 минут = 300000 миллисекунд
     }
 
     function startBonusTimer(){
@@ -1013,7 +1009,6 @@
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             document.getElementById('mainMenu').classList.remove('hidden');
-            startAutoReload(); // Запускаем авто-перезагрузку сразу в меню
         }, 1500);
     }
 
@@ -1033,6 +1028,61 @@
     document.getElementById('cheatAllUpgrades').addEventListener('click', () => { upgrades.forEach(u => u.purchased = true); purchasedCount = upgrades.length; updateUI(); renderUpgrades(); saveGame(); updateAchievements(); showToast("✅ Все нейросети куплены!"); closeCheatMenu(); });
     document.getElementById('cheatClose').addEventListener('click', () => closeCheatMenu());
 
+    // Экспорт/импорт
+    function exportProgress() {
+        const saveData = {
+            version: GAME_VERSION,
+            points, prime, totalSpent, purchasedCount, diamonds, currentSkin,
+            totalClicks, soundEnabled, primeBonus, skins,
+            upgrades: upgrades.map(u => u.purchased),
+            achievements: achievements,
+            chatMessages: chatMessages
+        };
+        const dataStr = JSON.stringify(saveData, null, 2);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `neural_evolution_save_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("💾 Прогресс сохранён в файл!");
+    }
+
+    function importProgress(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                points = data.points ?? 100;
+                prime = data.prime ?? 0;
+                totalSpent = data.totalSpent ?? 0;
+                purchasedCount = data.purchasedCount ?? 0;
+                diamonds = data.diamonds ?? 0;
+                currentSkin = data.currentSkin ?? "🧠";
+                totalClicks = data.totalClicks ?? 0;
+                soundEnabled = data.soundEnabled ?? false;
+                primeBonus = data.primeBonus ?? (1 + prime * 0.05);
+                skins = data.skins ?? { neon: false, gold: false, rainbow: false };
+                chatMessages = data.chatMessages ?? [];
+                if(data.upgrades) data.upgrades.forEach((p, i) => { if(upgrades[i]) upgrades[i].purchased = p; });
+                if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
+                
+                document.getElementById('brain').innerText = currentSkin;
+                document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
+                updateUI();
+                renderUpgrades();
+                renderChat();
+                updateAchievements();
+                saveGame();
+                showToast("✅ Прогресс восстановлен!");
+            } catch(err) {
+                showToast("❌ Ошибка: неверный файл");
+            }
+        };
+        reader.readAsText(file);
+    }
+
     function init(){
         loadGame();
         setInterval(addBotMessage, 18000);
@@ -1044,6 +1094,7 @@
             if (e.target.files.length > 0) importProgress(e.target.files[0]);
             e.target.value = '';
         });
+        document.getElementById('resetBtn').addEventListener('click', resetProgress);
 
         document.getElementById('chatSendBtn').addEventListener('click', sendChatMessage);
         document.getElementById('chatInput').addEventListener('keypress', e => { if(e.key === 'Enter') sendChatMessage(); });
