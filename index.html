@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | Экспорт/Импорт</title>
+    <title>🧠 Эволюция Нейросетей | Авто-перезагрузка</title>
     <style>
         * {
             margin: 0;
@@ -438,13 +438,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.1.0</div>
+    <div class="loading-sub">Эволюция нейросетей v5.1.2</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion" title="Нажми и удержи для секретного меню">v5.1.0</div>
+        <div class="game-version" id="menuVersion" title="Нажми и удержи для секретного меню">v5.1.2</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn small" id="exportBtn">💾 ЭКСПОРТ</div>
@@ -461,7 +461,6 @@
     </div>
 
     <div id="gameInterface" class="game-interface hidden">
-        <!-- то же самое, что и было -->
         <div class="top-bar">
             <div class="resource-item"><span>🧠</span><span class="resource-value" id="points">100</span></div>
             <div class="resource-item"><span>⚡</span><span class="resource-value" id="power">1</span></div>
@@ -511,15 +510,16 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ ЭКСПОРТ/ИМПОРТ ПРОГРЕССА!<br>✨ Скрытое чит-меню (зажми версию)<br>✨ 1000 нейросетей<br>✨ Анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 10 МИНУТ!<br>✨ Экспорт/импорт прогресса<br>✨ 1000 нейросетей<br>✨ Анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.1.0";
+    const GAME_VERSION = "5.1.2";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
+    // Автофон
     function updateBackgroundByTime() {
         const hours = new Date().getHours();
         let bgClass = '';
@@ -533,6 +533,7 @@
     updateBackgroundByTime();
     setInterval(updateBackgroundByTime, 60000);
 
+    // Проверка версии (без сброса)
     if(localStorage.getItem('gameVersion') !== GAME_VERSION){
         localStorage.setItem('gameVersion', GAME_VERSION);
         console.log("✅ Игра обновлена до " + GAME_VERSION);
@@ -544,6 +545,8 @@
     let primeBonus = 1, totalClicks = 0, skins = { neon: false, gold: false, rainbow: false };
     let soundEnabled = false;
     let lastClickTime = 0, isBlocked = false, blockEndTime = 0, blockInterval = null;
+    let autoReloadTimer = null;
+    let autoReloadWarningTimer = null;
 
     // 1000 нейросетей
     let upgrades = [];
@@ -845,7 +848,6 @@
                 const data = JSON.parse(e.target.result);
                 if (!data.version) throw new Error("Неверный файл");
                 
-                // Восстанавливаем все данные
                 points = data.points ?? 100;
                 prime = data.prime ?? 0;
                 totalSpent = data.totalSpent ?? 0;
@@ -940,6 +942,32 @@
         } else { showToast(`❌ Нужно ${price}💎`); }
     }
 
+    // ========== АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 10 МИНУТ ==========
+    function startAutoReload() {
+        if (autoReloadTimer) clearTimeout(autoReloadTimer);
+        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
+        
+        autoReloadTimer = setTimeout(() => {
+            // Показываем предупреждение за 5 секунд до перезагрузки
+            const warning = document.createElement('div');
+            warning.className = 'toast';
+            warning.style.background = 'linear-gradient(145deg, #ff5500, #aa2200)';
+            warning.style.animation = 'fadeOut 3s forwards';
+            warning.innerHTML = '🔄 Авто-перезагрузка через 5 секунд. Прогресс сохранён!';
+            document.body.appendChild(warning);
+            
+            autoReloadWarningTimer = setTimeout(() => {
+                saveGame();
+                location.reload();
+            }, 5000);
+        }, 600000); // 10 минут
+    }
+    
+    function stopAutoReload() {
+        if (autoReloadTimer) clearTimeout(autoReloadTimer);
+        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
+    }
+
     function startBonusTimer(){
         if(bonusInterval) clearInterval(bonusInterval);
         bonusInterval = setInterval(() => {
@@ -964,12 +992,15 @@
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('gameInterface').classList.remove('hidden');
         startBonusTimer();
+        startAutoReload(); // Запускаем авто-перезагрузку
     }
     function showMainMenu(){
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('gameInterface').classList.add('hidden');
         if(bonusInterval) clearInterval(bonusInterval);
+        stopAutoReload(); // Останавливаем авто-перезагрузку в меню
     }
+    
     function showPrimeModal(){
         document.getElementById('primeInfo').innerHTML = `У вас ${Math.floor(points)} очков<br>Нужно 10000 для ПРАЙМА<br>Текущий прайм: ${prime}<br>Следующий бонус: +5%`;
         document.getElementById('primeModal').classList.add('show');
