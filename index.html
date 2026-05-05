@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | Авто-перезагрузка</title>
+    <title>🧠 Эволюция Нейросетей | Авто-перезагрузка 5 мин</title>
     <style>
         * {
             margin: 0;
@@ -438,13 +438,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.1.2</div>
+    <div class="loading-sub">Эволюция нейросетей v5.1.3</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion" title="Нажми и удержи для секретного меню">v5.1.2</div>
+        <div class="game-version" id="menuVersion" title="Нажми и удержи для секретного меню">v5.1.3</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn small" id="exportBtn">💾 ЭКСПОРТ</div>
@@ -510,13 +510,13 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 10 МИНУТ!<br>✨ Экспорт/импорт прогресса<br>✨ 1000 нейросетей<br>✨ Анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 5 МИНУТ ВЕЗДЕ!<br>✨ Экспорт/импорт прогресса<br>✨ 1000 нейросетей<br>✨ Анти-автокликер</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.1.2";
+    const GAME_VERSION = "5.1.3";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
 
     // Автофон
@@ -942,7 +942,7 @@
         } else { showToast(`❌ Нужно ${price}💎`); }
     }
 
-    // ========== АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 10 МИНУТ ==========
+    // ========== АВТО-ПЕРЕЗАГРУЗКА 5 МИНУТ ВЕЗДЕ ==========
     function startAutoReload() {
         if (autoReloadTimer) clearTimeout(autoReloadTimer);
         if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
@@ -960,12 +960,7 @@
                 saveGame();
                 location.reload();
             }, 5000);
-        }, 600000); // 10 минут
-    }
-    
-    function stopAutoReload() {
-        if (autoReloadTimer) clearTimeout(autoReloadTimer);
-        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
+        }, 300000); // 5 минут = 300000 миллисекунд
     }
 
     function startBonusTimer(){
@@ -992,13 +987,11 @@
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('gameInterface').classList.remove('hidden');
         startBonusTimer();
-        startAutoReload(); // Запускаем авто-перезагрузку
     }
     function showMainMenu(){
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('gameInterface').classList.add('hidden');
         if(bonusInterval) clearInterval(bonusInterval);
-        stopAutoReload(); // Останавливаем авто-перезагрузку в меню
     }
     
     function showPrimeModal(){
@@ -1020,6 +1013,7 @@
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             document.getElementById('mainMenu').classList.remove('hidden');
+            startAutoReload(); // Запускаем авто-перезагрузку сразу в меню
         }, 1500);
     }
 
