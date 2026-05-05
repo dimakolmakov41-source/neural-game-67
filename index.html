@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🧠 Эволюция Нейросетей | Глобальные таймеры</title>
+    <title>🧠 Эволюция Нейросетей | Локальные таймеры</title>
     <style>
         * {
             margin: 0;
@@ -461,13 +461,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub">Эволюция нейросетей v5.5.1</div>
+    <div class="loading-sub">Эволюция нейросетей v5.6.0</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.5.1</div>
+        <div class="game-version" id="menuVersion">v5.6.0</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn small" id="exportBtn">💾 ЭКСПОРТ</div>
@@ -503,11 +503,11 @@
             <div class="stat-item"><div class="stat-value" id="totalClicks">0</div><div class="stat-label">Кликов</div></div>
         </div>
 
-        <!-- Глобальные таймеры -->
+        <!-- Локальные таймеры -->
         <div class="global-timers">
-            <div class="timer-item">🎲 БОСС: <span id="bossCountdown">--:--</span></div>
-            <div class="timer-item">🔄 ПЕРЕЗАГРУЗКА: <span id="reloadCountdown">--:--</span></div>
-            <div class="timer-item">⏱️ БОНУС: <span id="bonusCountdown">--:--</span></div>
+            <div class="timer-item">🎲 БОСС: <span id="bossCountdown">05:00</span></div>
+            <div class="timer-item">🔄 ПЕРЕЗАГРУЗКА: <span id="reloadCountdown">03:00</span></div>
+            <div class="timer-item">⏱️ БОНУС: <span id="bonusCountdown">10:00</span></div>
         </div>
 
         <!-- Босс -->
@@ -516,7 +516,7 @@
             <div class="boss-hp-bar"><div class="boss-hp-fill" id="bossHpFill" style="width: 100%"></div></div>
             <div class="boss-hp-text" id="bossHpText">❤️ 1000 / 1000</div>
             <div class="boss-reward" id="bossReward">💰 Награда: 100💎</div>
-            <div class="boss-timer" id="bossTimer">⏱️ Глобальный босс</div>
+            <div class="boss-timer" id="bossTimer">⏱️ Босс неактивен</div>
         </div>
 
         <div class="brain-container">
@@ -558,13 +558,13 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ ГЛОБАЛЬНЫЕ ТАЙМЕРЫ через интернет!<br>✨ Босс каждые 5 минут по реальному времени<br>✨ Перезагрузка каждые 3 минуты<br>✨ 1000 нейросетей с названиями</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ ЛОКАЛЬНЫЕ ТАЙМЕРЫ (без интернета)<br>✨ Босс каждые 5 минут<br>✨ Перезагрузка каждые 3 минуты<br>✨ 1000 нейросетей</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.5.1";
+    const GAME_VERSION = "5.6.0";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
     
     // Автофон по времени
@@ -593,10 +593,10 @@
     let soundEnabled = false;
     let primeBonus = 1;
     
-    // Глобальное реальное время
-    let realTimeOffset = 0;
-    let lastBonusTime = 0;
-    let lastReloadTime = 0;
+    // Локальные таймеры (отсчёт от запуска игры)
+    let bossTimer = 300;      // 5 минут
+    let reloadTimer = 180;    // 3 минуты
+    let bonusTimer = 600;     // 10 минут
     
     // Босс
     let bossActive = false;
@@ -604,35 +604,6 @@
     let bossMaxHp = 1000;
     let bossReward = 100;
     let bossRewardValue = 100;
-    
-    // Функция получения реального времени
-    function getRealTime() {
-        return Date.now() + realTimeOffset;
-    }
-    
-    // Синхронизация времени с сервером
-    async function syncTime() {
-        try {
-            const response = await fetch('https://worldtimeapi.org/api/timezone/Europe/Moscow');
-            const data = await response.json();
-            const serverTime = new Date(data.utc_datetime).getTime();
-            const localTime = Date.now();
-            realTimeOffset = serverTime - localTime;
-            console.log("Время синхронизировано");
-        } catch(e) {
-            console.log("Офлайн режим, используем локальное время");
-            realTimeOffset = 0;
-        }
-    }
-    
-    // Глобальные таймеры
-    function getSecondsUntilNext(minutes) {
-        const now = getRealTime();
-        const msInCycle = minutes * 60 * 1000;
-        const msPassed = now % msInCycle;
-        const msLeft = msInCycle - msPassed;
-        return Math.floor(msLeft / 1000);
-    }
     
     // 1000 НЕЙРОСЕТЕЙ С НАЗВАНИЯМИ
     let upgrades = [];
@@ -687,10 +658,9 @@
     // Чат
     let chatMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
     const botPhrases = [
-        "🔴 Анон: Глобальный босс каждые 5 минут!", "🤖 Бот: Бей босса, получай алмазы!",
+        "🔴 Анон: Появился босс! Бейте его!", "🤖 Бот: Бей босса, получай алмазы!",
         "💎 Бот: Алмазы выпадают с шансом 1%", "👑 Бот: Прайм даёт +5% к силе",
-        "🔥 Чат: 1000 нейросетей имба!", "🧠 Гений: Купил 500 сетей!",
-        "⚡ Спидран: 10000 кликов за час!"
+        "🔥 Чат: 1000 нейросетей имба!", "🧠 Гений: Купил 500 сетей!"
     ];
     
     function renderChat(){
@@ -837,6 +807,7 @@
         bossRewardValue = bossReward;
         updateBossUI();
         showToast(`🔥 ПОЯВИЛСЯ БОСС! HP: ${bossMaxHp}, Награда: ${bossReward}💎`);
+        playWinSound();
     }
     
     function updateBossUI() {
@@ -847,11 +818,12 @@
             document.getElementById('bossReward').innerHTML = `💰 Награда: ${bossReward}💎`;
             document.getElementById('bossTimer').innerHTML = `⚔️ БОСС АКТИВЕН! БЕЙТЕ!`;
         } else {
-            const sec = getSecondsUntilNextBoss();
+            const minutes = Math.floor(bossTimer / 60);
+            const seconds = bossTimer % 60;
             document.getElementById('bossHpFill').style.width = `0%`;
             document.getElementById('bossHpText').innerHTML = `💀 Босс спит`;
             document.getElementById('bossReward').innerHTML = `💰 Награда: ${bossReward}💎`;
-            document.getElementById('bossTimer').innerHTML = `⏱️ Следующий через: ${Math.floor(sec/60)}:${(sec%60).toString().padStart(2,'0')}`;
+            document.getElementById('bossTimer').innerHTML = `⏱️ Следующий через: ${minutes}:${seconds.toString().padStart(2,'0')}`;
         }
     }
     
@@ -864,64 +836,61 @@
             let bossKills = parseInt(localStorage.getItem('bossKills') || '0') + 1;
             localStorage.setItem('bossKills', bossKills);
             showToast(`🎉 ВЫ УБИЛИ БОССА! +${bossReward}💎`);
+            bossTimer = 300;
             updateUI();
             updateAchievements();
+            updateBossUI();
         } else {
             updateBossUI();
         }
         saveGame();
     }
     
-    function getSecondsUntilNextBoss() {
-        return getSecondsUntilNext(5);
-    }
-    
-    function getSecondsUntilNextReload() {
-        return getSecondsUntilNext(3);
-    }
-    
-    function updateGlobalTimers() {
-        const reloadSec = getSecondsUntilNextReload();
-        const bossSec = getSecondsUntilNextBoss();
-        
-        document.getElementById('reloadCountdown').innerText = `${Math.floor(reloadSec/60)}:${(reloadSec%60).toString().padStart(2,'0')}`;
-        document.getElementById('bossCountdown').innerText = `${Math.floor(bossSec/60)}:${(bossSec%60).toString().padStart(2,'0')}`;
-        
-        // Бонус
-        const now = getRealTime();
-        const seconds = Math.floor(now / 1000) % 600;
-        document.getElementById('bonusCountdown').innerText = `${Math.floor((600-seconds)/60)}:${((600-seconds)%60).toString().padStart(2,'0')}`;
-        
-        // Бонус за стирку
-        if(seconds === 0 && lastBonusTime < now - 5000){
-            lastBonusTime = now;
-            diamonds += 50;
-            updateUI();
-            saveGame();
-            showToast("⏱️ БОНУС! +50 алмазов!");
-            updateAchievements();
-        }
-        
-        // Авто-перезагрузка
-        if(reloadSec === 0 && lastReloadTime < now - 5000){
-            lastReloadTime = now;
-            const warning = document.createElement('div');
-            warning.className = 'toast';
-            warning.style.background = 'linear-gradient(145deg, #ff5500, #aa2200)';
-            warning.innerHTML = '🔄 Глобальная перезагрузка через 5 секунд. Прогресс сохранён!';
-            document.body.appendChild(warning);
-            setTimeout(() => {
-                saveGame();
-                location.reload();
-            }, 5000);
-        }
-        
-        // Босс
-        if(bossSec <= 2 && !bossActive){
-            spawnBoss();
-        } else if(bossSec > 5 && bossActive){
-            bossActive = false;
+    // Обновление всех таймеров (каждую секунду)
+    function updateTimers() {
+        if(bossTimer > 0) {
+            bossTimer--;
+            if(bossTimer === 0 && !bossActive) {
+                spawnBoss();
+            }
             updateBossUI();
+        }
+        
+        if(reloadTimer > 0) {
+            reloadTimer--;
+            const minutes = Math.floor(reloadTimer / 60);
+            const seconds = reloadTimer % 60;
+            document.getElementById('reloadCountdown').innerText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+            
+            if(reloadTimer === 0) {
+                const warning = document.createElement('div');
+                warning.className = 'toast';
+                warning.style.background = 'linear-gradient(145deg, #ff5500, #aa2200)';
+                warning.innerHTML = '🔄 Перезагрузка через 5 секунд. Прогресс сохранён!';
+                document.body.appendChild(warning);
+                setTimeout(() => {
+                    saveGame();
+                    location.reload();
+                }, 5000);
+                reloadTimer = 180;
+            }
+        }
+        
+        if(bonusTimer > 0) {
+            bonusTimer--;
+            const minutes = Math.floor(bonusTimer / 60);
+            const seconds = bonusTimer % 60;
+            document.getElementById('bonusCountdown').innerText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+            document.getElementById('bonusTimerDisplay').innerText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+            
+            if(bonusTimer === 0) {
+                diamonds += 50;
+                updateUI();
+                saveGame();
+                showToast("⏱️ БОНУС! +50 алмазов!");
+                updateAchievements();
+                bonusTimer = 600;
+            }
         }
     }
     
@@ -1166,11 +1135,10 @@
         reader.readAsText(file);
     }
     
-    async function init(){
-        await syncTime();
+    function init(){
         loadGame();
         setInterval(addBotMessage, 20000);
-        setInterval(updateGlobalTimers, 1000);
+        setInterval(updateTimers, 1000);
         showLoadingAndStart();
         
         document.getElementById('exportBtn').addEventListener('click', exportProgress);
