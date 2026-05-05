@@ -447,13 +447,13 @@
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА...</div>
-    <div class="loading-sub" id="loadingSub">Эволюция нейросетей v5.3.0</div>
+    <div class="loading-sub" id="loadingSub">Эволюция нейросетей v5.3.1</div>
 </div>
 
 <div class="game-container">
     <div id="mainMenu" class="main-menu">
         <div class="game-title" id="gameTitle">🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ</div>
-        <div class="game-version" id="menuVersion">v5.3.0</div>
+        <div class="game-version" id="menuVersion">v5.3.1</div>
         
         <div class="menu-buttons-row">
             <div class="menu-btn theme" id="themeBtn">🧺 СМЕНИТЬ ТЕМУ</div>
@@ -541,22 +541,48 @@
 <!-- Модалки -->
 <div class="modal-overlay" id="promoModal"><div class="modal-content"><div class="modal-title">🎫 ПРОМОКОД</div><input id="promoInput" class="modal-input"><button id="activatePromoBtn" class="modal-btn">АКТИВИРОВАТЬ</button><button id="closePromoBtn" class="modal-btn">ЗАКРЫТЬ</button><div id="promoMessage"></div></div></div>
 <div class="modal-overlay" id="achievementsModal"><div class="modal-content"><div class="modal-title">🏆 ДОСТИЖЕНИЯ</div><div id="achievementsList" style="max-height:300px;overflow-y:auto"></div><button id="closeAchievementsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
-<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ: НЕЙРОСЕТИ ↔️ СТИРАЛКА<br>✨ Босс-нейросеть (можно стирать босса)<br>✨ Кнопка сброса прогресса</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
+<div class="modal-overlay" id="newsModal"><div class="modal-content"><div class="modal-title">📢 НОВОСТИ</div><div>✨ БОСС ПОЯВЛЯЕТСЯ КАЖДЫЕ 5 МИНУТ!<br>✨ АВТО-ПЕРЕЗАГРУЗКА КАЖДЫЕ 10 МИНУТ<br>✨ ТАЙМЕР БОССА НЕ СБРАСЫВАЕТСЯ<br>✨ Переключение темы: Нейросети ↔️ Стиралка</div><button id="closeNewsBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="primeModal"><div class="modal-content"><div class="modal-title">👑 ПРАЙМ</div><div id="primeInfo"></div><button id="doPrimeBtn" class="modal-btn">СОВЕРШИТЬ ПРАЙМ</button><button id="closePrimeBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 <div class="modal-overlay" id="shopModal"><div class="modal-content"><div class="modal-title">🛒 СКИНЫ</div><div class="shop-item" data-skin="neon" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🔥 Неоновый 50💎</div><div class="shop-item" data-skin="gold" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">💎 Золотой 100💎</div><div class="shop-item" data-skin="rainbow" style="padding:10px;background:#1a3150;margin:5px;border-radius:40px;cursor:pointer;">🌈 Радужный 200💎</div><button id="closeShopBtn" class="modal-btn">ЗАКРЫТЬ</button></div></div>
 
 <script>
 (function(){
-    const GAME_VERSION = "5.3.0";
+    const GAME_VERSION = "5.3.1";
     document.getElementById('menuVersion').innerText = `v${GAME_VERSION}`;
     
-    // Тема: true = нейросети, false = стиралка
+    // Тема
     let isNeuralTheme = true;
-    
-    // Загрузка темы
     const savedTheme = localStorage.getItem('gameTheme');
     if (savedTheme !== null) {
         isNeuralTheme = savedTheme === 'neural';
+    }
+    
+    // ========== АВТО-ПЕРЕЗАГРУЗКА 10 МИНУТ ==========
+    let autoReloadTimer = null;
+    let autoReloadWarningTimer = null;
+    
+    function startAutoReload() {
+        if (autoReloadTimer) clearTimeout(autoReloadTimer);
+        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
+        
+        autoReloadTimer = setTimeout(() => {
+            const warning = document.createElement('div');
+            warning.className = 'toast';
+            warning.style.background = 'linear-gradient(145deg, #ff5500, #aa2200)';
+            warning.style.animation = 'fadeOut 3s forwards';
+            warning.innerHTML = '🔄 Авто-перезагрузка через 5 секунд. Прогресс сохранён!';
+            document.body.appendChild(warning);
+            
+            autoReloadWarningTimer = setTimeout(() => {
+                saveGame();
+                location.reload();
+            }, 5000);
+        }, 600000); // 10 минут
+    }
+    
+    function stopAutoReload() {
+        if (autoReloadTimer) clearTimeout(autoReloadTimer);
+        if (autoReloadWarningTimer) clearTimeout(autoReloadWarningTimer);
     }
     
     function updateThemeUI() {
@@ -579,7 +605,7 @@
         if (isNeuralTheme) {
             title.innerHTML = '🧠 ЭВОЛЮЦИЯ НЕЙРОСЕТЕЙ';
             themeBtn.innerHTML = '🧺 СТИРАЛЬНЫЙ МАХАЧ';
-            loadingSub.innerHTML = 'Эволюция нейросетей v5.3.0';
+            loadingSub.innerHTML = 'Эволюция нейросетей v5.3.1';
             if (pointsIcon) pointsIcon.innerHTML = '🧠';
             if (powerIcon) powerIcon.innerHTML = '⚡';
             if (primeIcon) primeIcon.innerHTML = '👑';
@@ -595,7 +621,7 @@
         } else {
             title.innerHTML = '🧺 СТИРАЛЬНЫЙ МАХАЧ';
             themeBtn.innerHTML = '🧠 НЕЙРОСЕТИ';
-            loadingSub.innerHTML = 'Стиральный Махач v5.3.0';
+            loadingSub.innerHTML = 'Стиральный Махач v5.3.1';
             if (pointsIcon) pointsIcon.innerHTML = '🧺';
             if (powerIcon) powerIcon.innerHTML = '🌀';
             if (primeIcon) primeIcon.innerHTML = '🧼';
@@ -610,7 +636,6 @@
             if (bossReward) bossReward.innerHTML = `💰 Награда: ${bossRewardValue || 100}🪙`;
         }
         
-        // Обновляем названия улучшений
         renderUpgrades();
         updateUI();
     }
@@ -668,15 +693,172 @@
     let soundEnabled = false;
     let bossRewardValue = 100;
     
-    // Босс
+    // Босс с сохранением таймера
     let bossActive = false;
     let bossHp = 0;
     let bossMaxHp = 1000;
     let bossReward = 100;
-    let nextBossTime = 0;
+    let bossRespawnTime = 0; // время в миллисекундах, когда появится босс
     let bossTimerInterval = null;
     
-    // 1000 нейросетей
+    // Загрузка состояния босса
+    function loadBossState() {
+        const savedBossActive = localStorage.getItem('bossActive');
+        const savedBossHp = localStorage.getItem('bossHp');
+        const savedBossMaxHp = localStorage.getItem('bossMaxHp');
+        const savedBossReward = localStorage.getItem('bossReward');
+        const savedBossRespawnTime = localStorage.getItem('bossRespawnTime');
+        
+        if (savedBossActive === 'true' && savedBossHp && savedBossMaxHp) {
+            bossActive = true;
+            bossHp = parseInt(savedBossHp);
+            bossMaxHp = parseInt(savedBossMaxHp);
+            bossReward = parseInt(savedBossReward);
+            bossRewardValue = bossReward;
+            updateBossUI();
+        } else if (savedBossRespawnTime) {
+            bossActive = false;
+            bossRespawnTime = parseInt(savedBossRespawnTime);
+        }
+        
+        startBossTimer();
+    }
+    
+    function saveBossState() {
+        if (bossActive) {
+            localStorage.setItem('bossActive', 'true');
+            localStorage.setItem('bossHp', bossHp);
+            localStorage.setItem('bossMaxHp', bossMaxHp);
+            localStorage.setItem('bossReward', bossReward);
+            localStorage.removeItem('bossRespawnTime');
+        } else {
+            localStorage.setItem('bossActive', 'false');
+            localStorage.setItem('bossRespawnTime', bossRespawnTime);
+            localStorage.removeItem('bossHp');
+            localStorage.removeItem('bossMaxHp');
+            localStorage.removeItem('bossReward');
+        }
+    }
+    
+    function spawnBoss() {
+        bossActive = true;
+        bossMaxHp = Math.floor(1000 + (prime * 100) + (purchasedCount * 2));
+        bossHp = bossMaxHp;
+        bossReward = Math.floor(100 + (prime * 10) + (purchasedCount / 10));
+        bossRewardValue = bossReward;
+        
+        updateBossUI();
+        saveBossState();
+        showToast(`🔥 ПОЯВИЛСЯ ${isNeuralTheme ? 'БОСС-НЕЙРОСЕТЬ' : 'БОСС-СТИРАЛКА'}! HP: ${bossMaxHp}, Награда: ${bossReward}${isNeuralTheme ? '💎' : '🪙'}`);
+    }
+    
+    function updateBossUI() {
+        const percent = (bossHp / bossMaxHp) * 100;
+        document.getElementById('bossHpFill').style.width = `${percent}%`;
+        document.getElementById('bossHpText').innerHTML = `❤️ ${Math.floor(bossHp)} / ${bossMaxHp}`;
+        document.getElementById('bossReward').innerHTML = `💰 Награда: ${bossReward}${isNeuralTheme ? '💎' : '🪙'}`;
+    }
+    
+    function damageBoss(damage) {
+        if (!bossActive) return;
+        bossHp -= damage;
+        if (bossHp <= 0) {
+            bossActive = false;
+            diamonds += bossReward;
+            let bossKills = parseInt(localStorage.getItem('bossKills') || '0') + 1;
+            localStorage.setItem('bossKills', bossKills);
+            showToast(`🎉 ВЫ УБИЛИ ${isNeuralTheme ? 'БОССА' : 'СТИРАЛКУ'}! +${bossReward}${isNeuralTheme ? '💎' : '🪙'}`);
+            updateUI();
+            updateAchievements();
+            // Устанавливаем время следующего появления через 5 минут
+            bossRespawnTime = Date.now() + 300000; // 5 минут
+            saveBossState();
+        } else {
+            updateBossUI();
+            saveBossState();
+            const bossDiv = document.getElementById('bossContainer');
+            bossDiv.style.transform = 'scale(0.98)';
+            setTimeout(() => { if(bossDiv) bossDiv.style.transform = ''; }, 100);
+        }
+        saveGame();
+    }
+    
+    function startBossTimer() {
+        if (bossTimerInterval) clearInterval(bossTimerInterval);
+        bossTimerInterval = setInterval(() => {
+            if (!bossActive) {
+                const remaining = Math.max(0, bossRespawnTime - Date.now());
+                if (remaining <= 0) {
+                    spawnBoss();
+                } else {
+                    const minutes = Math.floor(remaining / 60000);
+                    const seconds = Math.floor((remaining % 60000) / 1000);
+                    document.getElementById('bossTimer').innerHTML = `⏱️ ${isNeuralTheme ? 'Босс' : 'Стиралка'} появится через: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            } else {
+                document.getElementById('bossTimer').innerHTML = `⚔️ ${isNeuralTheme ? 'БОСС АКТИВЕН' : 'СТИРАЛКА АКТИВНА'}! БЕЙТЕ!`;
+            }
+        }, 1000);
+    }
+    
+    function doClick(){
+        let gain = getClickPower();
+        points += gain;
+        totalClicks++;
+        
+        if (bossActive) {
+            damageBoss(gain);
+        }
+        
+        if(Math.random() < 0.01){ diamonds++; showToast(`${isNeuralTheme ? '💎 +1 алмаз' : '🪙 +1 монетка'}!`); updateAchievements(); }
+        updateUI();
+        saveGame();
+        updateAchievements();
+        renderUpgrades();
+        if(navigator.vibrate) navigator.vibrate(20);
+    }
+    
+    function handleBrainClick(e){
+        e.preventDefault();
+        doClick();
+        let brain = document.getElementById('brain');
+        brain.style.transform = 'translateY(6px)';
+        setTimeout(() => brain.style.transform = '', 100);
+        let rect = brain.getBoundingClientRect();
+        let x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left+80);
+        let y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top+80);
+        let ef = document.createElement('div'); ef.className='click-effect'; ef.innerText = `+${getClickPower()}`;
+        ef.style.left = x + 'px'; ef.style.top = y + 'px';
+        document.body.appendChild(ef);
+        setTimeout(() => ef.remove(), 800);
+    }
+    
+    function updateUI(){
+        document.getElementById('points').innerText = Math.floor(points);
+        document.getElementById('power').innerText = getClickPower();
+        document.getElementById('primeLevel').innerText = prime;
+        document.getElementById('clickHint').innerHTML = `+${getClickPower()}`;
+        document.getElementById('netCount').innerText = purchasedCount;
+        document.getElementById('totalSpent').innerText = totalSpent;
+        document.getElementById('primeBonus').innerText = Math.floor((primeBonus-1)*100) + '%';
+        document.getElementById('diamonds').innerText = diamonds;
+        document.getElementById('totalClicks').innerText = totalClicks;
+    }
+    
+    function renderUpgrades(){
+        let html = '';
+        let displayCount = Math.min(upgrades.length, 200);
+        for(let i = 0; i < displayCount; i++){
+            let up = upgrades[i];
+            let canAfford = points >= Math.floor(up.price);
+            let disabled = (up.purchased || !canAfford) ? 'purchased' : '';
+            let displayName = isNeuralTheme ? up.name : getUpgradeName(up.name, i);
+            let priceDisplay = up.purchased ? '✅' : `💰 ${Math.floor(up.price)}`;
+            html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${displayName} +${up.power}</span><span class="upgrade-price">${priceDisplay}</span></div>`;
+        }
+        document.getElementById('upgradesContainer').innerHTML = html;
+    }
+    
     let upgrades = [];
     for(let i = 0; i < 1000; i++){
         let power = i === 0 ? 1 : 1 + Math.floor(i / 8);
@@ -828,122 +1010,6 @@
         return Math.floor(base * primeBonus);
     }
     
-    function spawnBoss() {
-        bossActive = true;
-        bossMaxHp = Math.floor(1000 + (prime * 100) + (purchasedCount * 2));
-        bossHp = bossMaxHp;
-        bossReward = Math.floor(100 + (prime * 10) + (purchasedCount / 10));
-        bossRewardValue = bossReward;
-        
-        updateBossUI();
-        showToast(`🔥 ПОЯВИЛСЯ ${isNeuralTheme ? 'БОСС-НЕЙРОСЕТЬ' : 'БОСС-СТИРАЛКА'}! HP: ${bossMaxHp}, Награда: ${bossReward}${isNeuralTheme ? '💎' : '🪙'}`);
-    }
-    
-    function updateBossUI() {
-        const percent = (bossHp / bossMaxHp) * 100;
-        document.getElementById('bossHpFill').style.width = `${percent}%`;
-        document.getElementById('bossHpText').innerHTML = `❤️ ${Math.floor(bossHp)} / ${bossMaxHp}`;
-        document.getElementById('bossReward').innerHTML = `💰 Награда: ${bossReward}${isNeuralTheme ? '💎' : '🪙'}`;
-    }
-    
-    function damageBoss(damage) {
-        if (!bossActive) return;
-        bossHp -= damage;
-        if (bossHp <= 0) {
-            bossActive = false;
-            diamonds += bossReward;
-            let bossKills = parseInt(localStorage.getItem('bossKills') || '0') + 1;
-            localStorage.setItem('bossKills', bossKills);
-            showToast(`🎉 ВЫ УБИЛИ ${isNeuralTheme ? 'БОССА' : 'СТИРАЛКУ'}! +${bossReward}${isNeuralTheme ? '💎' : '🪙'}`);
-            updateUI();
-            updateAchievements();
-            nextBossTime = Date.now() + 3600000;
-            startBossTimer();
-        } else {
-            updateBossUI();
-            const bossDiv = document.getElementById('bossContainer');
-            bossDiv.style.transform = 'scale(0.98)';
-            setTimeout(() => { if(bossDiv) bossDiv.style.transform = ''; }, 100);
-        }
-        saveGame();
-    }
-    
-    function startBossTimer() {
-        if (bossTimerInterval) clearInterval(bossTimerInterval);
-        bossTimerInterval = setInterval(() => {
-            if (!bossActive) {
-                const remaining = Math.max(0, nextBossTime - Date.now());
-                if (remaining <= 0) {
-                    spawnBoss();
-                } else {
-                    const minutes = Math.floor(remaining / 60000);
-                    const seconds = Math.floor((remaining % 60000) / 1000);
-                    document.getElementById('bossTimer').innerHTML = `⏱️ ${isNeuralTheme ? 'Босс' : 'Стиралка'} появится через: ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
-            } else {
-                document.getElementById('bossTimer').innerHTML = `⚔️ ${isNeuralTheme ? 'БОСС АКТИВЕН' : 'СТИРАЛКА АКТИВНА'}! БЕЙТЕ!`;
-            }
-        }, 1000);
-    }
-    
-    function doClick(){
-        let gain = getClickPower();
-        points += gain;
-        totalClicks++;
-        
-        if (bossActive) {
-            damageBoss(gain);
-        }
-        
-        if(Math.random() < 0.01){ diamonds++; showToast(`${isNeuralTheme ? '💎 +1 алмаз' : '🪙 +1 монетка'}!`); updateAchievements(); }
-        updateUI();
-        saveGame();
-        updateAchievements();
-        renderUpgrades();
-        if(navigator.vibrate) navigator.vibrate(20);
-    }
-    
-    function handleBrainClick(e){
-        e.preventDefault();
-        doClick();
-        let brain = document.getElementById('brain');
-        brain.style.transform = 'translateY(6px)';
-        setTimeout(() => brain.style.transform = '', 100);
-        let rect = brain.getBoundingClientRect();
-        let x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left+80);
-        let y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top+80);
-        let ef = document.createElement('div'); ef.className='click-effect'; ef.innerText = `+${getClickPower()}`;
-        ef.style.left = x + 'px'; ef.style.top = y + 'px';
-        document.body.appendChild(ef);
-        setTimeout(() => ef.remove(), 800);
-    }
-    
-    function updateUI(){
-        document.getElementById('points').innerText = Math.floor(points);
-        document.getElementById('power').innerText = getClickPower();
-        document.getElementById('primeLevel').innerText = prime;
-        document.getElementById('clickHint').innerHTML = `+${getClickPower()}`;
-        document.getElementById('netCount').innerText = purchasedCount;
-        document.getElementById('totalSpent').innerText = totalSpent;
-        document.getElementById('primeBonus').innerText = Math.floor((primeBonus-1)*100) + '%';
-        document.getElementById('diamonds').innerText = diamonds;
-        document.getElementById('totalClicks').innerText = totalClicks;
-    }
-    
-    function renderUpgrades(){
-        let html = '';
-        let displayCount = Math.min(upgrades.length, 200);
-        for(let i = 0; i < displayCount; i++){
-            let up = upgrades[i];
-            let canAfford = points >= Math.floor(up.price);
-            let disabled = (up.purchased || !canAfford) ? 'purchased' : '';
-            let displayName = isNeuralTheme ? up.name : getUpgradeName(up.name, i);
-            let priceDisplay = up.purchased ? '✅' : `💰 ${Math.floor(up.price)}`;
-            html += `<div class="upgrade-card ${disabled}" data-id="${up.id}"><span class="upgrade-name">${displayName} +${up.power}</span><span class="upgrade-price">${priceDisplay}</span></div>`;
-        }
-        document.getElementById('upgradesContainer').innerHTML = html;
-    }
-    
     function buyUpgrade(id){
         let up = upgrades.find(u => u.id === id);
         if(!up || up.purchased) return;
@@ -994,7 +1060,12 @@
             achievements: achievements,
             chatMessages: chatMessages,
             bossKills: parseInt(localStorage.getItem('bossKills') || '0'),
-            theme: isNeuralTheme ? 'neural' : 'washer'
+            theme: isNeuralTheme ? 'neural' : 'washer',
+            bossActive: bossActive,
+            bossHp: bossHp,
+            bossMaxHp: bossMaxHp,
+            bossReward: bossReward,
+            bossRespawnTime: bossRespawnTime
         };
         localStorage.setItem('neuralEvoSave', JSON.stringify(saveData));
         document.getElementById('saveBadge').innerText = '💾 сохранено!';
@@ -1021,8 +1092,26 @@
                 if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
                 if(data.bossKills) localStorage.setItem('bossKills', data.bossKills);
                 if(data.theme) isNeuralTheme = data.theme === 'neural';
+                
+                // Восстанавливаем босса
+                if (data.bossActive === true && data.bossHp) {
+                    bossActive = true;
+                    bossHp = data.bossHp;
+                    bossMaxHp = data.bossMaxHp || 1000;
+                    bossReward = data.bossReward || 100;
+                    bossRewardValue = bossReward;
+                } else if (data.bossRespawnTime) {
+                    bossActive = false;
+                    bossRespawnTime = data.bossRespawnTime;
+                } else {
+                    bossActive = false;
+                    bossRespawnTime = Date.now() + 300000; // 5 минут
+                }
             } catch(e) { console.log("Ошибка загрузки", e); }
+        } else {
+            bossRespawnTime = Date.now() + 300000;
         }
+        
         primeBonus = 1 + (prime * 0.05);
         document.getElementById('brain').innerText = currentSkin;
         document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
@@ -1031,19 +1120,8 @@
         renderChat();
         updateAchievements();
         updateThemeUI();
-        
-        const lastBossKill = localStorage.getItem('lastBossKillTime');
-        if (lastBossKill) {
-            nextBossTime = parseInt(lastBossKill) + 3600000;
-            if (nextBossTime < Date.now()) {
-                spawnBoss();
-            } else {
-                startBossTimer();
-            }
-        } else {
-            nextBossTime = Date.now() + 3600000;
-            startBossTimer();
-        }
+        updateBossUI();
+        startBossTimer();
     }
     
     function buySkin(name, price, emoji){
@@ -1082,11 +1160,13 @@
         document.getElementById('mainMenu').classList.add('hidden');
         document.getElementById('gameInterface').classList.remove('hidden');
         startBonusTimer();
+        startAutoReload();
     }
     function showMainMenu(){
         document.getElementById('mainMenu').classList.remove('hidden');
         document.getElementById('gameInterface').classList.add('hidden');
         if(bonusInterval) clearInterval(bonusInterval);
+        stopAutoReload();
     }
     
     function showPrimeModal(){
@@ -1108,6 +1188,7 @@
         setTimeout(() => {
             loadingScreen.classList.add('hidden');
             document.getElementById('mainMenu').classList.remove('hidden');
+            startAutoReload();
         }, 1500);
     }
     
@@ -1135,7 +1216,8 @@
             upgrades: upgrades.map(u => u.purchased),
             achievements: achievements,
             chatMessages: chatMessages,
-            theme: isNeuralTheme ? 'neural' : 'washer'
+            theme: isNeuralTheme ? 'neural' : 'washer',
+            bossActive, bossHp, bossMaxHp, bossReward, bossRespawnTime
         };
         const dataStr = JSON.stringify(saveData, null, 2);
         const blob = new Blob([dataStr], {type: "application/json"});
@@ -1168,6 +1250,19 @@
                 if(data.achievements) for(let k in data.achievements) if(achievements[k]) achievements[k].completed = data.achievements[k].completed;
                 if(data.theme) isNeuralTheme = data.theme === 'neural';
                 
+                if (data.bossActive === true && data.bossHp) {
+                    bossActive = true;
+                    bossHp = data.bossHp;
+                    bossMaxHp = data.bossMaxHp || 1000;
+                    bossReward = data.bossReward || 100;
+                } else if (data.bossRespawnTime) {
+                    bossActive = false;
+                    bossRespawnTime = data.bossRespawnTime;
+                } else {
+                    bossActive = false;
+                    bossRespawnTime = Date.now() + 300000;
+                }
+                
                 document.getElementById('brain').innerText = currentSkin;
                 document.getElementById('soundBtn').innerHTML = soundEnabled ? "🔊 ЗВУК ВКЛ" : "🔇 ЗВУК ВЫКЛ";
                 updateUI();
@@ -1175,6 +1270,8 @@
                 renderChat();
                 updateAchievements();
                 updateThemeUI();
+                updateBossUI();
+                startBossTimer();
                 saveGame();
                 showToast("✅ Прогресс восстановлен!");
             } catch(err) {
